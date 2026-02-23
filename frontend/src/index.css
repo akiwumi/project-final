@@ -1,0 +1,7 @@
+@import "tailwindcss";
+@import "./design-system/theme.css";
+
+body {
+  margin: 0;
+  font-family: var(--ds-font-sans);
+}
