@@ -29,7 +29,7 @@ export function CTASection() {
           transition={{ delay: 0.2 }}
         >
           <a
-            href="/register"
+            href="/choose-role"
             className="inline-flex items-center px-8 py-4 rounded-xl font-semibold bg-amber-500 text-gray-900 hover:bg-amber-400 transition shadow-lg"
           >
             Get Started

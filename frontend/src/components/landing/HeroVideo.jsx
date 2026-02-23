@@ -48,7 +48,7 @@ export function HeroVideo() {
         transition={{ delay: 0.4, duration: 0.6 }}
       >
         <motion.a
-          href="/register"
+          href="/choose-role"
           className="inline-flex items-center px-8 py-4 rounded-xl font-semibold text-lg bg-[var(--ds-accent)] text-[var(--ds-text-on-dark)] hover:bg-[var(--ds-accent-hover)] transition-all duration-300 hover:scale-105 hover:shadow-lg"
           whileHover={{ y: -2 }}
         >

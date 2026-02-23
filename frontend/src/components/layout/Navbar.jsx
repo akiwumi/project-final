@@ -41,12 +41,6 @@ export function Navbar() {
             >
               Sign In
             </a>
-            <a
-              href="/register"
-              className="text-base font-semibold px-6 py-3 rounded-xl bg-[var(--ds-accent)] text-[var(--ds-text-on-dark)] hover:bg-[var(--ds-accent-hover)] transition"
-            >
-              Get Started
-            </a>
           </div>
 
           <button
@@ -78,13 +72,6 @@ export function Navbar() {
                 onClick={() => setMobileOpen(false)}
               >
                 Sign In
-              </a>
-              <a
-                href="/register"
-                className="mt-2 py-3 text-center font-semibold rounded-xl bg-[var(--ds-accent)] text-[var(--ds-text-on-dark)]"
-                onClick={() => setMobileOpen(false)}
-              >
-                Get Started
               </a>
             </div>
           </div>

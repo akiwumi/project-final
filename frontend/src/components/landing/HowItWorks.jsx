@@ -97,7 +97,7 @@ export function HowItWorks() {
           viewport={{ once: true }}
         >
           <a
-            href="/register"
+            href="/choose-role"
             className="inline-flex items-center px-8 py-4 rounded-xl font-semibold bg-[var(--ds-accent)] text-[var(--ds-text-on-dark)] hover:bg-[var(--ds-accent-hover)] transition shadow-lg"
           >
             Get Started
