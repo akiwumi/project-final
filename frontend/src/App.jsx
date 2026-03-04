@@ -9,6 +9,10 @@ import { SubmitProject } from "./pages/entrepreneur/SubmitProject";
 import { Payment } from "./pages/entrepreneur/Payment";
 import { EntrepreneurDashboard } from "./pages/entrepreneur/Dashboard";
 import { ProjectFeed } from "./pages/ProjectFeed";
+import { HowItWorksPage } from "./pages/HowItWorks";
+import { WhyUsPage } from "./pages/WhyUs";
+import { TestimonialsPage } from "./pages/TestimonialsPage";
+import { AdvicePage } from "./pages/Advice";
 
 export function App() {
   return (
@@ -19,6 +23,12 @@ export function App() {
         <Route path="/choose-role" element={<ChooseRole />} />
         <Route path="/investor" element={<Investor />} />
         <Route path="/feed" element={<ProjectFeed />} />
+
+        {/* Nav pages */}
+        <Route path="/how-it-works" element={<HowItWorksPage />} />
+        <Route path="/why-us" element={<WhyUsPage />} />
+        <Route path="/testimonials" element={<TestimonialsPage />} />
+        <Route path="/advice" element={<AdvicePage />} />
 
         {/* Entrepreneur registration flow */}
         <Route path="/register" element={<EntrepreneurRegister />} />
