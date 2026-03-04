@@ -1,4 +1,4 @@
-import { Menu } from "lucide-react";
+import { Menu, X } from "lucide-react";
 import { useState } from "react";
 
 const navLinks = [
@@ -6,38 +6,37 @@ const navLinks = [
   { label: "Why us", href: "#why" },
   { label: "Testimonials", href: "#testimonials" },
   { label: "Advice", href: "#advice" },
-  { label: "Rules", href: "#rules" },
-  { label: "Terms", href: "#terms" },
-  { label: "About", href: "#about" },
 ];
 
 export function Navbar() {
   const [mobileOpen, setMobileOpen] = useState(false);
 
   return (
-    <header
-      className="fixed top-0 left-0 right-0 z-50 bg-[#FDFCF9] text-[var(--ds-text-primary)] shadow-sm border-b border-[var(--ds-border)]"
-    >
+    <header className="fixed top-0 left-0 right-0 z-50 bg-[var(--ds-bg-light)] border-b border-[var(--ds-border)]">
       <nav className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex items-center justify-between h-16">
-          <a href="/" className="flex items-center gap-2 font-bold text-xl tracking-tight">
-            <span>CONNECT</span>
-            <span className="text-[var(--ds-accent)]">AFRICA</span>
+          <a
+            href="/"
+            className="flex items-center gap-1 text-xl tracking-tight"
+            style={{ fontFamily: "var(--ds-font-display)", fontStyle: "italic" }}
+          >
+            <span className="font-bold text-[var(--ds-text-primary)]">Connect</span>
+            <span className="font-bold text-[var(--ds-accent)]">Africa</span>
           </a>
 
           <div className="hidden md:flex items-center gap-6">
-            {navLinks.slice(0, 4).map((link) => (
+            {navLinks.map((link) => (
               <a
                 key={link.href}
                 href={link.href}
-                className="text-base font-medium text-[var(--ds-text-secondary)] hover:text-[var(--ds-text-primary)] transition"
+                className="text-sm font-medium text-[var(--ds-text-secondary)] hover:text-[var(--ds-text-primary)] transition"
               >
                 {link.label}
               </a>
             ))}
             <a
               href="/login"
-              className="text-base font-medium px-5 py-2.5 rounded-xl border-2 border-[var(--ds-text-primary)] text-[var(--ds-text-primary)] hover:bg-[var(--ds-overlay)] transition"
+              className="text-sm font-medium px-5 py-2 rounded-full border border-[var(--ds-text-primary)] text-[var(--ds-text-primary)] hover:bg-[var(--ds-text-primary)] hover:text-[var(--ds-text-on-dark)] transition"
             >
               Sign In
             </a>
@@ -45,22 +44,22 @@ export function Navbar() {
 
           <button
             type="button"
-            className="md:hidden p-2"
+            className="md:hidden p-2 text-[var(--ds-text-primary)]"
             onClick={() => setMobileOpen(!mobileOpen)}
             aria-label="Toggle menu"
           >
-            <Menu className="w-6 h-6" />
+            {mobileOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
           </button>
         </div>
 
         {mobileOpen && (
           <div className="md:hidden py-4 border-t border-[var(--ds-border)]">
-            <div className="flex flex-col gap-2">
+            <div className="flex flex-col gap-3">
               {navLinks.map((link) => (
                 <a
                   key={link.href}
                   href={link.href}
-                  className="py-2 text-base text-[var(--ds-text-secondary)]"
+                  className="py-1.5 text-sm text-[var(--ds-text-secondary)] hover:text-[var(--ds-text-primary)] transition"
                   onClick={() => setMobileOpen(false)}
                 >
                   {link.label}
@@ -68,7 +67,7 @@ export function Navbar() {
               ))}
               <a
                 href="/login"
-                className="py-3 text-center font-medium rounded-xl border-2 border-[var(--ds-text-primary)] text-[var(--ds-text-primary)]"
+                className="mt-1 py-3 text-center text-sm font-medium rounded-full border border-[var(--ds-text-primary)] text-[var(--ds-text-primary)]"
                 onClick={() => setMobileOpen(false)}
               >
                 Sign In

@@ -18,24 +18,27 @@ const footerLinks = {
 export function Footer() {
   return (
     <footer className="bg-[var(--ds-bg-dark)] text-[var(--ds-text-on-dark)]">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-14">
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
           <div>
-            <span className="font-bold text-lg">
-              CONNECT <span className="text-[var(--ds-accent)]">AFRICA</span>
+            <span
+              className="font-bold text-lg italic"
+              style={{ fontFamily: "var(--ds-font-display)" }}
+            >
+              Connect <span className="text-[var(--ds-accent)]">Africa</span>
             </span>
-            <p className="mt-2 text-sm opacity-90 leading-[var(--ds-line-normal)]">
+            <p className="mt-3 text-sm text-[var(--ds-text-on-dark)]/65 leading-[var(--ds-line-relaxed)]">
               The trust layer for cross-border investment into Africa.
             </p>
           </div>
           <div>
-            <h4 className="font-semibold mb-3">Product</h4>
-            <ul className="space-y-2">
+            <h4 className="text-xs uppercase tracking-[0.15em] font-medium text-[var(--ds-accent)] mb-4">Product</h4>
+            <ul className="space-y-2.5">
               {footerLinks.product.map((link) => (
-                <li key={link.href}>
+                <li key={link.label}>
                   <a
                     href={link.href}
-                    className="text-sm opacity-90 hover:text-[var(--ds-accent)] transition"
+                    className="text-sm text-[var(--ds-text-on-dark)]/65 hover:text-[var(--ds-accent)] transition"
                   >
                     {link.label}
                   </a>
@@ -44,13 +47,13 @@ export function Footer() {
             </ul>
           </div>
           <div>
-            <h4 className="font-semibold mb-3">Resources</h4>
-            <ul className="space-y-2">
+            <h4 className="text-xs uppercase tracking-[0.15em] font-medium text-[var(--ds-accent)] mb-4">Resources</h4>
+            <ul className="space-y-2.5">
               {footerLinks.resources.map((link) => (
-                <li key={link.href}>
+                <li key={link.label}>
                   <a
                     href={link.href}
-                    className="text-sm opacity-90 hover:text-[var(--ds-accent)] transition"
+                    className="text-sm text-[var(--ds-text-on-dark)]/65 hover:text-[var(--ds-accent)] transition"
                   >
                     {link.label}
                   </a>
@@ -59,12 +62,12 @@ export function Footer() {
             </ul>
           </div>
           <div>
-            <h4 className="font-semibold mb-3">Contact</h4>
-            <p className="text-sm flex items-center gap-2 opacity-90">
+            <h4 className="text-xs uppercase tracking-[0.15em] font-medium text-[var(--ds-accent)] mb-4">Contact</h4>
+            <p className="text-sm flex items-center gap-2 text-[var(--ds-text-on-dark)]/65">
               <MapPin className="w-4 h-4 shrink-0" />
               Africa · Global
             </p>
-            <p className="text-[length:var(--ds-small-size)] flex items-center gap-2 mt-1 opacity-90">
+            <p className="text-sm flex items-center gap-2 mt-2 text-[var(--ds-text-on-dark)]/65">
               <Mail className="w-4 h-4 shrink-0" />
               <a
                 href="mailto:hello@connectafrica.example"
@@ -75,7 +78,7 @@ export function Footer() {
             </p>
           </div>
         </div>
-        <div className="mt-10 pt-8 border-t border-white/20 text-center text-sm opacity-80">
+        <div className="mt-12 pt-8 border-t border-white/10 text-center text-xs text-[var(--ds-text-on-dark)]/40">
           © {new Date().getFullYear()} Connect Africa. All rights reserved.
         </div>
       </div>

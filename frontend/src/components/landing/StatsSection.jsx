@@ -40,14 +40,24 @@ export function StatsSection() {
   const inView = useInView(ref, { once: true });
 
   return (
-    <section className="py-20 bg-[var(--ds-bg-dark)] text-[var(--ds-text-on-dark)]">
+    <section className="py-24 bg-[var(--ds-bg-dark)] text-[var(--ds-text-on-dark)]">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8" ref={ref}>
+        <motion.p
+          className="text-center text-xs uppercase tracking-[0.2em] text-[var(--ds-accent)] mb-3 font-medium"
+          initial={{ opacity: 0, y: 12 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true }}
+          transition={{ duration: 0.5 }}
+        >
+          By the Numbers
+        </motion.p>
         <motion.h2
-          className="text-3xl sm:text-4xl font-bold text-center mb-14"
-          style={{ lineHeight: "var(--ds-line-tight)" }}
+          className="text-3xl sm:text-4xl font-bold italic text-center mb-14"
+          style={{ fontFamily: "var(--ds-font-display)", lineHeight: "var(--ds-line-tight)" }}
           initial={{ opacity: 0, y: 20 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
+          transition={{ delay: 0.05 }}
         >
           Platform at a Glance
         </motion.h2>
@@ -62,16 +72,19 @@ export function StatsSection() {
               transition={{ delay: i * 0.1 }}
             >
               <div className="flex justify-center mb-3">
-                <stat.icon className="w-10 h-10 text-[var(--ds-accent)]" />
+                <stat.icon className="w-9 h-9 text-[var(--ds-accent)]" />
               </div>
-              <div className="text-3xl sm:text-4xl font-bold text-[var(--ds-accent)]">
+              <div
+                className="text-3xl sm:text-4xl font-bold text-[var(--ds-accent)]"
+                style={{ fontFamily: "var(--ds-font-display)" }}
+              >
                 <AnimatedCounter
                   value={stat.value}
                   suffix={stat.suffix}
                   inView={inView}
                 />
               </div>
-              <p className="text-[var(--ds-text-on-dark)]/80 mt-1">{stat.label}</p>
+              <p className="text-[var(--ds-text-on-dark)]/70 mt-1 text-sm">{stat.label}</p>
             </motion.div>
           ))}
         </div>

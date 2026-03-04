@@ -48,11 +48,20 @@ export function Testimonials() {
       : testimonials.filter((t) => t.role === activeTab);
 
   return (
-    <section id="testimonials" className="py-20 bg-[var(--ds-bg-light)]">
+    <section id="testimonials" className="py-24 bg-[var(--ds-surface)]">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <motion.p
+          className="text-center text-xs uppercase tracking-[0.2em] text-[var(--ds-accent)] mb-3 font-medium"
+          initial={{ opacity: 0, y: 12 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true }}
+          transition={{ duration: 0.5 }}
+        >
+          Testimonials
+        </motion.p>
         <motion.h2
-          className="text-3xl sm:text-4xl font-bold text-center text-[var(--ds-text-primary)] mb-4"
-          style={{ lineHeight: "var(--ds-line-tight)" }}
+          className="text-3xl sm:text-4xl font-bold italic text-center text-[var(--ds-text-primary)] mb-10"
+          style={{ fontFamily: "var(--ds-font-display)", lineHeight: "var(--ds-line-tight)" }}
           initial={{ opacity: 0, y: 20 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
@@ -66,10 +75,10 @@ export function Testimonials() {
               key={tab}
               type="button"
               onClick={() => setActiveTab(tab)}
-              className={`px-4 py-2 rounded-full text-sm font-medium transition ${
+              className={`px-5 py-2 rounded-full text-sm font-medium transition ${
                 activeTab === tab
-                  ? "bg-[var(--ds-accent)] text-[var(--ds-text-on-dark)]"
-                  : "bg-[var(--ds-surface)] text-[var(--ds-text-secondary)] border border-[var(--ds-border)] hover:bg-[var(--ds-overlay)]"
+                  ? "bg-[var(--ds-accent)] text-[var(--ds-text-primary)]"
+                  : "bg-transparent text-[var(--ds-text-secondary)] border border-[var(--ds-border)] hover:border-[var(--ds-accent)] hover:text-[var(--ds-text-primary)]"
               }`}
             >
               {tab}
@@ -88,17 +97,17 @@ export function Testimonials() {
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: i * 0.05 }}
-              className="bg-[var(--ds-surface)] rounded-2xl p-6 border border-[var(--ds-border)]"
+              className="bg-[var(--ds-bg-light)] rounded-2xl p-6 border-l-4 border-[var(--ds-accent)]"
             >
-              <Quote className="w-8 h-8 text-[var(--ds-accent)]/50 mb-2" />
-              <p className="text-[var(--ds-text-secondary)] italic leading-[var(--ds-line-relaxed)]">&ldquo;{t.quote}&rdquo;</p>
-              <div className="mt-4 flex items-center gap-3">
-                <div className="w-10 h-10 rounded-full bg-[var(--ds-accent)]/20 flex items-center justify-center text-[var(--ds-accent)] font-bold">
+              <Quote className="w-9 h-9 text-[var(--ds-accent)] mb-3" />
+              <p className="text-[var(--ds-text-secondary)] italic leading-[var(--ds-line-relaxed)] text-sm">&ldquo;{t.quote}&rdquo;</p>
+              <div className="mt-5 flex items-center gap-3">
+                <div className="w-9 h-9 rounded-full bg-[var(--ds-accent)]/20 flex items-center justify-center text-[var(--ds-accent)] font-bold text-sm">
                   {t.name.charAt(0)}
                 </div>
                 <div>
-                  <p className="font-semibold text-[var(--ds-text-primary)]">{t.name}</p>
-                  <p className="text-sm text-[var(--ds-text-muted)]">
+                  <p className="font-semibold text-[var(--ds-text-primary)] text-sm">{t.name}</p>
+                  <p className="text-xs text-[var(--ds-text-muted)]">
                     {t.role} · {t.company} · {t.country}
                   </p>
                 </div>
