@@ -1,0 +1,272 @@
+import { useState, useRef } from "react";
+import { useNavigate } from "react-router-dom";
+import { Navbar } from "../../components/layout/Navbar";
+import { Footer } from "../../components/layout/Footer";
+import { EntrepreneurSidebar } from "../../components/entrepreneur/Sidebar";
+import {
+  Camera,
+  Building2,
+  Globe,
+  MapPin,
+  Users,
+  PenLine,
+  Save,
+  CheckCircle,
+} from "lucide-react";
+
+const inputCls =
+  "w-full px-4 py-2.5 rounded-xl border border-[var(--ds-border)] bg-white text-[var(--ds-text-primary)] placeholder:text-[var(--ds-text-muted)] focus:outline-none focus:ring-2 focus:ring-[var(--ds-accent)] focus:border-transparent text-sm";
+
+// Mock data — in production, load from Supabase
+const MOCK_USER = {
+  firstName: "Jane",
+  lastName: "Doe",
+  email: "jane@acmeltd.com",
+  phone: "+254 712 345 678",
+  companyName: "Acme Ltd.",
+  companyType: "startup",
+  employees: "6–10",
+  website: "https://acmeltd.com",
+  city: "Nairobi",
+  country: "Kenya",
+  companyAddress: "123 Westlands Road",
+};
+
+export function EntrepreneurProfile() {
+  const navigate = useNavigate();
+  const fileInputRef = useRef(null);
+
+  const [avatar, setAvatar] = useState(null);
+  const [avatarPreview, setAvatarPreview] = useState(null);
+  const [bio, setBio] = useState("");
+  const [presentation, setPresentation] = useState("");
+  const [saved, setSaved] = useState(false);
+  const [saving, setSaving] = useState(false);
+
+  function handleAvatarChange(e) {
+    const file = e.target.files[0];
+    if (!file) return;
+    setAvatar(file);
+    setAvatarPreview(URL.createObjectURL(file));
+  }
+
+  async function handleSave(e) {
+    e.preventDefault();
+    setSaving(true);
+    // TODO: upload avatar to Supabase Storage, update profile row
+    await new Promise((r) => setTimeout(r, 800));
+    setSaving(false);
+    setSaved(true);
+  }
+
+  const initials = `${MOCK_USER.firstName[0]}${MOCK_USER.lastName[0]}`;
+
+  return (
+    <div className="min-h-screen bg-[var(--ds-bg-light)]">
+      <Navbar />
+      <div className="flex pt-16">
+        <EntrepreneurSidebar active="profile" />
+
+        <main className="flex-1 p-6 lg:p-10 max-w-3xl">
+          <div className="mb-8">
+            <h1
+              className="text-2xl font-bold text-[var(--ds-text-primary)] mb-1"
+              style={{ fontFamily: "var(--ds-font-display)" }}
+            >
+              My Profile
+            </h1>
+            <p className="text-sm text-[var(--ds-text-secondary)]">
+              Complete your profile to appear credible to investors.
+            </p>
+          </div>
+
+          {saved && (
+            <div className="mb-6 flex items-center gap-2 p-4 rounded-xl bg-green-50 border border-green-200 text-sm text-green-700">
+              <CheckCircle className="w-4 h-4 shrink-0" />
+              Profile saved successfully.
+            </div>
+          )}
+
+          <form onSubmit={handleSave} className="space-y-8">
+            {/* Avatar */}
+            <section className="bg-white rounded-2xl border border-[var(--ds-border)] p-6">
+              <h2 className="text-base font-semibold text-[var(--ds-text-primary)] mb-5">
+                Profile Photo
+              </h2>
+              <div className="flex items-center gap-6">
+                <div className="relative">
+                  {avatarPreview ? (
+                    <img
+                      src={avatarPreview}
+                      alt="Profile"
+                      className="w-24 h-24 rounded-full object-cover border-2 border-[var(--ds-accent)]"
+                    />
+                  ) : (
+                    <div className="w-24 h-24 rounded-full bg-[var(--ds-accent)]/10 border-2 border-[var(--ds-accent)]/30 flex items-center justify-center text-2xl font-bold text-[var(--ds-accent)]">
+                      {initials}
+                    </div>
+                  )}
+                  <button
+                    type="button"
+                    className="absolute bottom-0 right-0 w-7 h-7 rounded-full bg-[var(--ds-accent)] flex items-center justify-center text-white shadow"
+                    onClick={() => fileInputRef.current?.click()}
+                  >
+                    <Camera className="w-3.5 h-3.5" />
+                  </button>
+                  <input
+                    ref={fileInputRef}
+                    type="file"
+                    accept="image/*"
+                    className="hidden"
+                    onChange={handleAvatarChange}
+                  />
+                </div>
+                <div>
+                  <p className="text-sm font-medium text-[var(--ds-text-primary)] mb-1">
+                    {MOCK_USER.firstName} {MOCK_USER.lastName}
+                  </p>
+                  <p className="text-xs text-[var(--ds-text-muted)] mb-3">
+                    JPG, PNG or GIF — max 5 MB
+                  </p>
+                  <button
+                    type="button"
+                    className="text-xs font-medium text-[var(--ds-accent)] underline hover:text-[var(--ds-accent-hover)]"
+                    onClick={() => fileInputRef.current?.click()}
+                  >
+                    Upload photo
+                  </button>
+                </div>
+              </div>
+            </section>
+
+            {/* About */}
+            <section className="bg-white rounded-2xl border border-[var(--ds-border)] p-6">
+              <h2 className="text-base font-semibold text-[var(--ds-text-primary)] mb-5 flex items-center gap-2">
+                <PenLine className="w-4 h-4 text-[var(--ds-accent)]" />
+                About You
+              </h2>
+              <div className="space-y-4">
+                <div>
+                  <label className="block text-sm font-medium text-[var(--ds-text-primary)] mb-1.5">
+                    Personal bio
+                  </label>
+                  <textarea
+                    rows={4}
+                    className={`${inputCls} resize-none`}
+                    placeholder="Tell investors a little about yourself — your background, expertise, and what drives you..."
+                    value={bio}
+                    onChange={(e) => setBio(e.target.value)}
+                  />
+                  <p className="text-xs text-[var(--ds-text-muted)] mt-1 text-right">
+                    {bio.length}/500
+                  </p>
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-[var(--ds-text-primary)] mb-1.5">
+                    Company presentation
+                  </label>
+                  <textarea
+                    rows={5}
+                    className={`${inputCls} resize-none`}
+                    placeholder="Describe your company, its mission, what problem it solves, and why you are seeking investment..."
+                    value={presentation}
+                    onChange={(e) => setPresentation(e.target.value)}
+                  />
+                  <p className="text-xs text-[var(--ds-text-muted)] mt-1 text-right">
+                    {presentation.length}/1000
+                  </p>
+                </div>
+              </div>
+            </section>
+
+            {/* Registration details (read-only) */}
+            <section className="bg-white rounded-2xl border border-[var(--ds-border)] p-6">
+              <h2 className="text-base font-semibold text-[var(--ds-text-primary)] mb-5 flex items-center gap-2">
+                <Building2 className="w-4 h-4 text-[var(--ds-accent)]" />
+                Registration Details
+              </h2>
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                {[
+                  { label: "First name", value: MOCK_USER.firstName },
+                  { label: "Last name", value: MOCK_USER.lastName },
+                  { label: "Email", value: MOCK_USER.email },
+                  { label: "Phone", value: MOCK_USER.phone },
+                  { label: "Company name", value: MOCK_USER.companyName },
+                  {
+                    label: "Company type",
+                    value:
+                      MOCK_USER.companyType === "startup"
+                        ? "Startup"
+                        : "Established company",
+                  },
+                  { label: "Employees", value: MOCK_USER.employees },
+                  { label: "Website", value: MOCK_USER.website || "—" },
+                ].map((field) => (
+                  <div key={field.label}>
+                    <p className="text-xs text-[var(--ds-text-muted)] mb-0.5">
+                      {field.label}
+                    </p>
+                    <p className="text-sm font-medium text-[var(--ds-text-primary)]">
+                      {field.value}
+                    </p>
+                  </div>
+                ))}
+              </div>
+              <div className="mt-4 flex items-center gap-2 text-xs text-[var(--ds-text-muted)]">
+                <MapPin className="w-3.5 h-3.5" />
+                {MOCK_USER.companyAddress}, {MOCK_USER.city}, {MOCK_USER.country}
+              </div>
+              <div className="mt-1 flex items-center gap-2 text-xs text-[var(--ds-text-muted)]">
+                <Globe className="w-3.5 h-3.5" />
+                <a
+                  href={MOCK_USER.website}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="text-[var(--ds-accent)] underline"
+                >
+                  {MOCK_USER.website}
+                </a>
+              </div>
+              <p className="text-xs text-[var(--ds-text-muted)] mt-3">
+                To update registration details, contact{" "}
+                <a
+                  href="mailto:support@connectafrica.com"
+                  className="text-[var(--ds-accent)] underline"
+                >
+                  support@connectafrica.com
+                </a>
+                .
+              </p>
+            </section>
+
+            {/* Save button */}
+            <div className="flex justify-end gap-4">
+              <button
+                type="button"
+                onClick={() => navigate("/entrepreneur/dashboard")}
+                className="px-6 py-2.5 rounded-xl border border-[var(--ds-border)] text-sm font-medium text-[var(--ds-text-secondary)] hover:bg-[var(--ds-overlay)] transition"
+              >
+                Go to Dashboard
+              </button>
+              <button
+                type="submit"
+                disabled={saving}
+                className="px-6 py-2.5 rounded-xl bg-[var(--ds-accent)] text-[var(--ds-text-on-dark)] font-semibold text-sm hover:bg-[var(--ds-accent-hover)] transition flex items-center gap-2 disabled:opacity-70"
+              >
+                {saving ? (
+                  "Saving…"
+                ) : (
+                  <>
+                    <Save className="w-4 h-4" />
+                    Save profile
+                  </>
+                )}
+              </button>
+            </div>
+          </form>
+        </main>
+      </div>
+      <Footer />
+    </div>
+  );
+}

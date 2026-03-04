@@ -10,7 +10,7 @@ const categories = [
     description:
       "You're building a venture and need capital, visibility, and structured introductions to investors. List your project, get reviewed, and receive serious interest from vetted investors across our network.",
     ctaLabel: "I'm an Entrepreneur",
-    ctaHref: "/register?role=entrepreneur",
+    ctaHref: "/register",
     accent: "bg-[var(--ds-accent)] text-[var(--ds-text-on-dark)] hover:bg-[var(--ds-accent-hover)]",
   },
   {
