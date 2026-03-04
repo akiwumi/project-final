@@ -1,151 +1,242 @@
 # Connect Africa
 
-A LinkedIn-style investment platform connecting global investors with African entrepreneurs and verified service providers.
+A structured investment facilitation platform connecting global investors with African entrepreneurs and verified service providers.
+
+**Live:** _add your deployment URL here_
+
+---
 
 ## What it does
 
-**Value proposition:** Reduce deal friction and increase trust in cross-border African investments through structured listings, verification workflows, and controlled communication.
+Connect Africa reduces deal friction and increases trust in cross-border African investments through verified listings, structured workflows, and controlled communication.
 
-**User roles:**
+**Three user roles:**
 
-- **Investors** — discover ventures, filter by country/sector/stage, manage watchlists, request introductions
-- **Entrepreneurs** — create project listings, upload documents, receive investor interest
-- **Service providers** — subscribe for visibility, capture leads, earn verification badges
+| Role | What they do |
+|---|---|
+| **Entrepreneur** | Register a company, submit funded projects (paid), receive investor interest, track submissions via a dashboard |
+| **Investor** | Browse verified ventures by country, sector and stage, express interest, enter deal rooms |
+| **Service Provider** | Get verified, increase visibility, receive qualified leads from investors and entrepreneurs |
+
+---
 
 ## Tech stack
 
-| Layer      | Technologies |
-|-----------|--------------|
-| **Frontend** | React 18, Vite, Tailwind CSS v4, Framer Motion, React Router, Lucide React |
-| **Backend**  | Node.js, Express, Babel (ES modules) |
-| **Database / Auth** | Supabase (client in backend), Mongoose (MongoDB) |
-| **Planned** | Stripe, WhatsApp Business API, AI assistance |
+| Layer | Technologies |
+|---|---|
+| **Frontend** | React 18, Vite, Tailwind CSS v4, Framer Motion, React Router v7, Lucide React |
+| **Backend** | Node.js, Express, Babel (ES modules) |
+| **Database / Auth / Storage** | Supabase (auth, PostgreSQL, storage, realtime) |
+| **Payments** | Stripe (planned — wiring guide in `BACKEND_WIRING.md`) |
+
+---
 
 ## Project structure
 
 ```
 project-final/
-├── backend/                 # Express API
+├── backend/
 │   ├── lib/
-│   │   └── supabase.js      # Supabase client (auth, DB, storage)
-│   ├── server.js            # App entry, CORS, routes
-│   └── .env                 # SUPABASE_*, MONGO_*, PORT (not committed)
-├── frontend/                # React SPA (Vite)
-│   ├── public/
-│   │   └── videos/           # Add hero-video.mp4 here (optional)
-│   ├── src/
-│   │   ├── design-system/
-│   │   │   └── theme.css     # CSS variables (design tokens)
-│   │   ├── components/
-│   │   │   ├── layout/       # Navbar, Footer
-│   │   │   └── landing/      # Hero, HowItWorks, Testimonials, etc.
-│   │   ├── pages/            # LandingPage, Investor, …
-│   │   ├── App.jsx           # React Router routes
-│   │   ├── main.jsx
-│   │   └── index.css
-│   └── index.html
-├── DESIGN_SYSTEM.md          # Design system (colors, typography, components)
-├── Build_Guide.md            # Full app build spec (schema, flows, pages)
-├── package.json              # Root scripts: postinstall, dev:backend, dev:frontend
-└── README.md                 # This file
+│   │   └── supabase.js              # Supabase admin client
+│   ├── server.js                    # Express entry point, CORS, routes
+│   └── .env                         # Secrets (not committed)
+│
+├── frontend/
+│   └── src/
+│       ├── design-system/
+│       │   └── theme.css            # CSS design tokens (colours, type, spacing)
+│       ├── components/
+│       │   ├── layout/
+│       │   │   ├── Navbar.jsx       # Top navigation bar
+│       │   │   └── Footer.jsx
+│       │   ├── landing/             # Landing page section components
+│       │   │   ├── HeroVideo.jsx
+│       │   │   ├── HowItWorks.jsx
+│       │   │   ├── ProblemSolution.jsx
+│       │   │   ├── StatsSection.jsx
+│       │   │   ├── Testimonials.jsx
+│       │   │   └── CTASection.jsx
+│       │   └── entrepreneur/
+│       │       └── Sidebar.jsx      # Sidebar navigation for entrepreneur area
+│       ├── pages/
+│       │   ├── LandingPage.jsx      # / — Hero, sections, CTA
+│       │   ├── ChooseRole.jsx       # /choose-role — three role selection cards
+│       │   ├── Investor.jsx         # /investor
+│       │   ├── ProjectFeed.jsx      # /feed — searchable project discovery feed
+│       │   ├── HowItWorks.jsx       # /how-it-works — per-role step-by-step pages
+│       │   ├── WhyUs.jsx            # /why-us — problem/solution, comparison table
+│       │   ├── TestimonialsPage.jsx # /testimonials — cards, video slots, case studies
+│       │   ├── Advice.jsx           # /advice — article grid, newsletter CTA
+│       │   └── entrepreneur/
+│       │       ├── Register.jsx     # /register — full registration form
+│       │       ├── Welcome.jsx      # /welcome — T&C acceptance after email confirm
+│       │       ├── Profile.jsx      # /entrepreneur/profile — avatar, bio, details
+│       │       ├── SubmitProject.jsx # /entrepreneur/submit — project + PDF upload
+│       │       ├── Payment.jsx      # /entrepreneur/payment — Stripe + calendar
+│       │       └── Dashboard.jsx    # /entrepreneur/dashboard — tracker + chat
+│       ├── App.jsx                  # All routes
+│       └── index.css
+│
+├── BACKEND_WIRING.md    # Step-by-step guide to wire Supabase, Stripe, and realtime
+├── DESIGN_SYSTEM.md     # Palette, typography, spacing, component patterns
+├── Build_Guide.md       # Full application spec and build order
+├── vercel.json          # SPA rewrite rule for Vercel deployment
+├── Procfile             # Heroku/Render process definition for backend
+└── package.json         # Root scripts: postinstall, dev:backend, dev:frontend
 ```
+
+---
+
+## Routes
+
+### Public
+
+| Path | Page |
+|---|---|
+| `/` | Landing page |
+| `/choose-role` | Role selection (Entrepreneur / Investor / Service Provider) |
+| `/how-it-works` | Step-by-step guide per role |
+| `/why-us` | Problem–solution, differentiators, comparison table |
+| `/testimonials` | User testimonials, video slots, case studies |
+| `/advice` | Article grid, quick tips, newsletter signup |
+| `/feed` | Project discovery feed with search and category filters |
+| `/investor` | Investor landing page |
+
+### Entrepreneur flow
+
+| Path | Page |
+|---|---|
+| `/register` | Registration form (personal + company details) |
+| `/welcome` | Email confirmation → Terms & Conditions acceptance |
+| `/entrepreneur/profile` | Profile — avatar, bio, company presentation |
+| `/entrepreneur/submit` | Submit a project (PDF upload, categories, funding stage) |
+| `/entrepreneur/payment` | €1,000 submission fee + phone verification calendar |
+| `/entrepreneur/dashboard` | Submission tracker, interest metrics, admin chat |
+
+---
+
+## Entrepreneur submission flow
+
+```
+Sign Up button
+    └─▶ /choose-role
+            └─▶ /register  (personal + company form)
+                    └─▶ Supabase sends confirmation email
+                            └─▶ /welcome  (T&C accordion + acceptance)
+                                    └─▶ /entrepreneur/profile  (avatar + bio)
+                                            └─▶ /entrepreneur/submit  (project form + PDFs)
+                                                    └─▶ /entrepreneur/payment  (Stripe + calendar)
+                                                            └─▶ /entrepreneur/dashboard
+```
+
+**Key rules:**
+- Submission fee: **€1,000** per project
+- **80%** refunded if project fails screening · **20%** retained as admin fee
+- PDF uploads: pitch deck required (max 50 MB), business plan optional
+- Phone verification: Mon–Fri, 09:00–16:00 GMT, 30-minute slots
+
+---
 
 ## Prerequisites
 
-- **Node.js** (v18 or v20 LTS recommended)
+- **Node.js** v18 or v20 LTS
 - **npm**
+
+---
 
 ## Installation
 
-From the project root:
-
 ```bash
+# From project root — installs backend + frontend deps in one step
 npm install
 ```
 
-This runs `postinstall` and installs dependencies for both `backend` and `frontend`.
+---
 
-## Environment variables (backend)
+## Environment variables
 
-Create `backend/.env` (the file is gitignored). Example:
+### `backend/.env`
 
 ```env
 # Supabase
 SUPABASE_URL=https://your-project.supabase.co
 SUPABASE_ANON_KEY=your_anon_key
-# Optional: for admin operations (bypass RLS)
-# SUPABASE_SERVICE_ROLE_KEY=your_service_role_key
+SUPABASE_SERVICE_ROLE_KEY=your_service_role_key   # For admin ops (bypasses RLS)
 
-# Optional: direct Postgres (migrations, tools)
-# SUPABASE_DB_URL=postgresql://...
+# Stripe
+STRIPE_SECRET_KEY=sk_test_...
+STRIPE_WEBHOOK_SECRET=whsec_...
 
-# Server
+# App
 PORT=8080
-
-# MongoDB (optional; defaults to mongodb://localhost/final-project)
-# MONGO_URL=mongodb://localhost/final-project
+FRONTEND_URL=http://localhost:5173
 ```
 
-The Supabase client is created in `backend/lib/supabase.js`; import `supabase` in your routes for auth, database, and storage.
+### `frontend/.env` _(create this file)_
 
-## Running the project
+```env
+VITE_SUPABASE_URL=https://your-project.supabase.co
+VITE_SUPABASE_ANON_KEY=your_anon_key
+VITE_API_URL=http://localhost:8080
+VITE_STRIPE_PUBLISHABLE_KEY=pk_test_...
+```
 
-### Backend (Express)
+---
 
-From **project root**:
+## Running locally
 
 ```bash
+# Terminal 1 — backend (http://localhost:8080)
 npm run dev:backend
-```
 
-Or from `backend/`:
-
-```bash
-cd backend && npm run dev
-```
-
-Server runs at **http://localhost:8080** (or the port in `PORT`).
-
-### Frontend (React + Vite)
-
-From **project root**:
-
-```bash
+# Terminal 2 — frontend (http://localhost:5173)
 npm run dev:frontend
 ```
 
-Or from `frontend/`:
-
-```bash
-cd frontend && npm run dev
-```
-
-Then open the URL shown (e.g. **http://localhost:5173**).
-
-### Run both
-
-Use two terminals: one for `npm run dev:backend`, one for `npm run dev:frontend`.
-
-## Frontend overview
-
-- **Landing page (`/`)** — Hero with role CTAs (Investor, Entrepreneur, Service Provider), How it works, Why Connect Africa, platform stats, testimonials, footer. Navbar is transparent over the hero and solid on scroll.
-- **Investor page (`/investor`)** — Placeholder page; linked from the “I’m an Investor” button on the landing page.
-- **Design system** — Colors, typography, and spacing are documented in `DESIGN_SYSTEM.md`. Tokens are available as CSS variables in `frontend/src/design-system/theme.css` (e.g. `--ds-bg-light`, `--ds-accent`, `--ds-text-primary`).
-- **Hero video** — Optional: add `frontend/public/videos/hero-video.mp4` for the hero background; otherwise a gradient fallback is used.
+---
 
 ## Root scripts
 
-| Script           | Command                    | Description                          |
-|------------------|----------------------------|--------------------------------------|
-| `postinstall`    | (runs on `npm install`)    | Installs backend + frontend deps     |
-| `dev:backend`    | `npm run dev:backend`      | Start backend dev server             |
-| `dev:frontend`   | `npm run dev:frontend`    | Start frontend dev server            |
+| Script | Description |
+|---|---|
+| `npm install` | Installs backend + frontend deps via `postinstall` |
+| `npm run dev:backend` | Start Express backend with nodemon |
+| `npm run dev:frontend` | Start Vite dev server |
+
+---
 
 ## Documentation
 
-- **Build_Guide.md** — Full application spec: Supabase schema, auth flows, Stripe, pages, API routes, deployment, and step-by-step build order.
-- **DESIGN_SYSTEM.md** — Design system derived from the reference: palette, type scale, components, spacing, and accessibility notes.
+| File | Contents |
+|---|---|
+| [`BACKEND_WIRING.md`](BACKEND_WIRING.md) | Step-by-step guide: Supabase tables, RLS policies, storage buckets, auth setup, per-page wiring code, Stripe integration, deployment checklist |
+| [`DESIGN_SYSTEM.md`](DESIGN_SYSTEM.md) | Colour palette, typography scale, spacing tokens, component patterns |
+| [`Build_Guide.md`](Build_Guide.md) | Full application spec, database schema, auth flows, API routes, build order |
 
-## View it live
+---
 
-Deploy the backend and frontend to your chosen hosts and add the live URL here so others can try the app.
+## Design system
+
+The editorial aesthetic is defined in `frontend/src/design-system/theme.css` as CSS custom properties:
+
+```css
+--ds-bg-light:       #F9F7F3   /* warm off-white page background */
+--ds-bg-dark:        #0F1A1C   /* dark sections and sidebar */
+--ds-accent:         #C9A96E   /* gold — primary brand colour */
+--ds-accent-green:   #2C5F4A   /* forest green — secondary accent */
+--ds-text-primary:   #0F1A1C
+--ds-text-secondary: #4A4A4A
+--ds-border:         #E5DDD0
+--ds-font-display:   "Playfair Display"  /* headings */
+--ds-font-sans:      "DM Sans"           /* body */
+```
+
+Use these as Tailwind arbitrary values: `bg-[var(--ds-accent)]`, `text-[var(--ds-text-primary)]`, etc.
+
+---
+
+## Deployment
+
+- **Frontend:** Vercel — `vercel.json` already contains the SPA rewrite rule
+- **Backend:** Render or Heroku — `Procfile` defines `web: npm start --prefix backend`
+- See [`BACKEND_WIRING.md`](BACKEND_WIRING.md) → Section 16 for the full deployment checklist
