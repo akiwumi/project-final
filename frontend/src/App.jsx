@@ -3,6 +3,7 @@ import { LandingPage } from "./pages/LandingPage";
 import { Investor } from "./pages/Investor";
 import { ChooseRole } from "./pages/ChooseRole";
 import { EntrepreneurRegister } from "./pages/entrepreneur/Register";
+import { Login } from "./pages/entrepreneur/Login";
 import { Welcome } from "./pages/entrepreneur/Welcome";
 import { EntrepreneurProfile } from "./pages/entrepreneur/Profile";
 import { SubmitProject } from "./pages/entrepreneur/SubmitProject";
@@ -32,6 +33,7 @@ export function App() {
 
         {/* Entrepreneur registration flow */}
         <Route path="/register" element={<EntrepreneurRegister />} />
+        <Route path="/login" element={<Login />} />
         <Route path="/welcome" element={<Welcome />} />
 
         {/* Entrepreneur authenticated pages */}
