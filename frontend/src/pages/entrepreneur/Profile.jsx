@@ -43,6 +43,7 @@ export function EntrepreneurProfile() {
   const [presentation, setPresentation] = useState("");
   const [saved, setSaved] = useState(false);
   const [saving, setSaving] = useState(false);
+  const [saveError, setSaveError] = useState("");
   const [profile, setProfile] = useState(null);
 
   useEffect(() => {
@@ -73,6 +74,7 @@ export function EntrepreneurProfile() {
   async function handleSave(e) {
     e.preventDefault();
     setSaving(true);
+    setSaveError("");
 
     const { data: { user } } = await supabase.auth.getUser();
     let avatarUrl = profile?.avatar_url || null;
@@ -84,21 +86,29 @@ export function EntrepreneurProfile() {
         .from("avatars")
         .upload(path, avatar, { upsert: true });
 
-      if (!uploadError) {
-        const { data: urlData } = supabase.storage
-          .from("avatars")
-          .getPublicUrl(path);
-        avatarUrl = urlData.publicUrl;
+      if (uploadError) {
+        setSaveError(`Photo upload failed: ${uploadError.message}`);
+        setSaving(false);
+        return;
       }
+
+      const { data: urlData } = supabase.storage
+        .from("avatars")
+        .getPublicUrl(path);
+      avatarUrl = urlData.publicUrl;
     }
 
-    await supabase
+    const { error: updateError } = await supabase
       .from("entrepreneurs")
       .update({ bio, presentation, avatar_url: avatarUrl })
       .eq("id", user.id);
 
     setSaving(false);
-    setSaved(true);
+    if (updateError) {
+      setSaveError(`Save failed: ${updateError.message}`);
+    } else {
+      setSaved(true);
+    }
   }
 
   const initials = `${MOCK_USER.firstName[0]}${MOCK_USER.lastName[0]}`;
@@ -126,6 +136,11 @@ export function EntrepreneurProfile() {
             <div className="mb-6 flex items-center gap-2 p-4 rounded-xl bg-green-50 border border-green-200 text-sm text-green-700">
               <CheckCircle className="w-4 h-4 shrink-0" />
               Profile saved successfully.
+            </div>
+          )}
+          {saveError && (
+            <div className="mb-6 p-4 rounded-xl bg-red-50 border border-red-200 text-sm text-red-700">
+              {saveError}
             </div>
           )}
 
