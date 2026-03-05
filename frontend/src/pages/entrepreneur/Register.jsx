@@ -320,6 +320,24 @@ export function EntrepreneurRegister() {
                   {showPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
                 </button>
               </div>
+              {form.password.length > 0 && (
+                <ul className="mt-2 space-y-1">
+                  {[
+                    { label: "At least 8 characters", ok: form.password.length >= 8 },
+                    { label: "One uppercase letter (A–Z)", ok: /[A-Z]/.test(form.password) },
+                    { label: "One lowercase letter (a–z)", ok: /[a-z]/.test(form.password) },
+                    { label: "One number (0–9)", ok: /[0-9]/.test(form.password) },
+                    { label: "One special character (!@#$…)", ok: /[^A-Za-z0-9]/.test(form.password) },
+                  ].map(({ label, ok }) => (
+                    <li key={label} className={`flex items-center gap-1.5 text-xs ${ok ? "text-green-600" : "text-[var(--ds-text-muted)]"}`}>
+                      <span className={`w-3.5 h-3.5 rounded-full flex items-center justify-center text-[10px] font-bold ${ok ? "bg-green-100 text-green-600" : "bg-gray-100 text-gray-400"}`}>
+                        {ok ? "✓" : "·"}
+                      </span>
+                      {label}
+                    </li>
+                  ))}
+                </ul>
+              )}
             </InputField>
 
             <InputField label="Confirm password" required error={errors.confirmPassword}>
