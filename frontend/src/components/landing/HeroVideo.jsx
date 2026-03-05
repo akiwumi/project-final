@@ -1,5 +1,6 @@
 import { motion } from "framer-motion";
 import { ChevronDown } from "lucide-react";
+import { Link } from "react-router-dom";
 
 export function HeroVideo() {
   return (
@@ -65,13 +66,14 @@ export function HeroVideo() {
         animate={{ opacity: 1, y: 0 }}
         transition={{ delay: 0.5, duration: 0.6 }}
       >
-        <motion.a
-          href="/choose-role"
-          className="inline-flex items-center px-8 py-3.5 rounded-full font-medium text-base bg-[var(--ds-accent)] text-[var(--ds-text-primary)] hover:bg-[var(--ds-accent-hover)] transition-all duration-300 hover:shadow-lg"
-          whileHover={{ y: -2 }}
-        >
-          Get Started
-        </motion.a>
+        <motion.div whileHover={{ y: -2 }}>
+          <Link
+            to="/choose-role"
+            className="inline-flex items-center px-8 py-3.5 rounded-full font-medium text-base bg-[var(--ds-accent)] text-[var(--ds-text-primary)] hover:bg-[var(--ds-accent-hover)] transition-all duration-300 hover:shadow-lg"
+          >
+            Get Started
+          </Link>
+        </motion.div>
       </motion.div>
 
       <motion.a

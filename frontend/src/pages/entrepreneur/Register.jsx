@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, Link } from "react-router-dom";
 import { Navbar } from "../../components/layout/Navbar";
 import { Footer } from "../../components/layout/Footer";
 import { ChevronDown, Eye, EyeOff, Rocket } from "lucide-react";
@@ -487,9 +487,9 @@ export function EntrepreneurRegister() {
               </button>
               <p className="text-center text-xs text-[var(--ds-text-muted)] mt-3">
                 Already have an account?{" "}
-                <a href="/login" className="text-[var(--ds-accent)] underline hover:text-[var(--ds-accent-hover)]">
+                <Link to="/login" className="text-[var(--ds-accent)] underline hover:text-[var(--ds-accent-hover)]">
                   Sign in
-                </a>
+                </Link>
               </p>
             </div>
           </form>

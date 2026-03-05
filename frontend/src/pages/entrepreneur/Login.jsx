@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, Link } from "react-router-dom";
 import { Navbar } from "../../components/layout/Navbar";
 import { Footer } from "../../components/layout/Footer";
 import { Eye, EyeOff, LogIn } from "lucide-react";
@@ -111,15 +111,15 @@ export function Login() {
               </button>
             </form>
 
-            <p className="text-center text-xs text-[var(--ds-text-muted)] mt-5">
-              Don't have an account?{" "}
-              <a
-                href="/register"
-                className="text-[var(--ds-accent)] underline hover:text-[var(--ds-accent-hover)] font-medium"
+            <div className="mt-5 pt-5 border-t border-[var(--ds-border)] text-center">
+              <p className="text-sm text-[var(--ds-text-secondary)] mb-3">Don't have an account?</p>
+              <Link
+                to="/register"
+                className="inline-block w-full py-3 rounded-xl border border-[var(--ds-accent)] text-[var(--ds-accent)] font-semibold text-sm hover:bg-[var(--ds-accent)] hover:text-[var(--ds-text-on-dark)] transition"
               >
-                Create one here
-              </a>
-            </p>
+                Create an account
+              </Link>
+            </div>
           </div>
         </div>
       </main>
