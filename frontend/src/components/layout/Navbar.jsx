@@ -42,7 +42,7 @@ export function Navbar() {
               Sign In
             </Link>
             <Link
-              to="/login"
+              to="/choose-role"
               className="text-sm font-medium px-5 py-2 rounded-full bg-[var(--ds-accent)] text-[var(--ds-text-on-dark)] hover:bg-[var(--ds-accent-hover)] transition"
             >
               Register
@@ -80,7 +80,7 @@ export function Navbar() {
                 Sign In
               </Link>
               <Link
-                to="/login"
+                to="/choose-role"
                 className="py-3 text-center text-sm font-medium rounded-full bg-[var(--ds-accent)] text-[var(--ds-text-on-dark)]"
                 onClick={() => setMobileOpen(false)}
               >
