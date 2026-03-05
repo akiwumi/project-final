@@ -3,6 +3,18 @@ import { useNavigate } from "react-router-dom";
 import { Navbar } from "../../components/layout/Navbar";
 import { CheckCircle, ChevronDown, ChevronUp, Shield } from "lucide-react";
 
+// At the top of Welcome.jsx — add this useEffect
+import { supabase } from "../../lib/supabase";
+
+useEffect(() => {
+  supabase.auth.getSession().then(({ data: { session } }) => {
+    if (!session) {
+      // Not confirmed yet — redirect back
+      navigate("/register");
+    }
+  });
+}, []);
+
 const TC_SECTIONS = [
   {
     id: "platform",
