@@ -114,7 +114,7 @@ export function Login() {
             <div className="mt-5 pt-5 border-t border-[var(--ds-border)] text-center">
               <p className="text-sm text-[var(--ds-text-secondary)] mb-3">Don't have an account?</p>
               <Link
-                to="/register"
+                to="/choose-role"
                 className="inline-block w-full py-3 rounded-xl border border-[var(--ds-accent)] text-[var(--ds-accent)] font-semibold text-sm hover:bg-[var(--ds-accent)] hover:text-[var(--ds-text-on-dark)] transition"
               >
                 Create an account
