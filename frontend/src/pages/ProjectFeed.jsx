@@ -1,5 +1,6 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Navbar } from "../components/layout/Navbar";
+import { supabase } from "../lib/supabase";
 import { Footer } from "../components/layout/Footer";
 import { Search, SlidersHorizontal, Eye, MessageSquare, TrendingUp, X } from "lucide-react";
 import { BUSINESS_CATEGORIES } from "./entrepreneur/SubmitProject";
@@ -129,6 +130,18 @@ function CategoryPill({ label, active, onClick }) {
 function ProjectCard({ project }) {
   const [interested, setInterested] = useState(false);
 
+  async function handleInterest(projectId) {
+    const { data: { user } } = await supabase.auth.getUser();
+
+    await supabase.from("project_interests").upsert(
+      { project_id: projectId, user_id: user.id },
+      { onConflict: "project_id,user_id" }
+    );
+
+    await supabase.rpc("increment_project_interests", { pid: projectId });
+    setInterested(true);
+  }
+
   const catLabel =
     BUSINESS_CATEGORIES.find((c) => c.value === project.category)?.label || project.category;
 
@@ -186,7 +199,8 @@ function ProjectCard({ project }) {
         </div>
         <button
           type="button"
-          onClick={() => setInterested((v) => !v)}
+          onClick={() => handleInterest(project.id)}
+          disabled={interested}
           className={`flex items-center gap-1.5 px-4 py-1.5 rounded-xl text-xs font-semibold transition ${
             interested
               ? "bg-[var(--ds-accent-green)]/10 text-[var(--ds-accent-green)] border border-[var(--ds-accent-green)]/30"
@@ -206,8 +220,26 @@ export function ProjectFeed() {
   const [activeCategory, setActiveCategory] = useState("all");
   const [activeStage, setActiveStage] = useState("All Stages");
   const [showFilters, setShowFilters] = useState(false);
+  const [projects, setProjects] = useState([]);
 
-  const filtered = MOCK_PROJECTS.filter((p) => {
+  useEffect(() => {
+    async function loadProjects() {
+      const { data } = await supabase
+        .from("projects")
+        .select(`
+          id, title, category, stage, amount_seeking, country,
+          summary, views, interests, submitted_at,
+          entrepreneurs ( company_name, avatar_url )
+        `)
+        .eq("status", "approved")
+        .order("submitted_at", { ascending: false });
+
+      if (data) setProjects(data);
+    }
+    loadProjects();
+  }, []);
+
+  const filtered = projects.filter((p) => {
     const matchSearch =
       !search ||
       p.title.toLowerCase().includes(search.toLowerCase()) ||

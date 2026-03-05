@@ -1,5 +1,6 @@
-import { useState, useRef } from "react";
+import { useState, useRef, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
+import { supabase } from "../../lib/supabase";
 import { Navbar } from "../../components/layout/Navbar";
 import { Footer } from "../../components/layout/Footer";
 import { EntrepreneurSidebar } from "../../components/entrepreneur/Sidebar";
@@ -42,6 +43,25 @@ export function EntrepreneurProfile() {
   const [presentation, setPresentation] = useState("");
   const [saved, setSaved] = useState(false);
   const [saving, setSaving] = useState(false);
+  const [profile, setProfile] = useState(null);
+
+  useEffect(() => {
+    async function loadProfile() {
+      const { data: { user } } = await supabase.auth.getUser();
+      const { data } = await supabase
+        .from("entrepreneurs")
+        .select("*")
+        .eq("id", user.id)
+        .single();
+      if (data) {
+        setProfile(data);
+        setBio(data.bio || "");
+        setPresentation(data.presentation || "");
+        setAvatarPreview(data.avatar_url || null);
+      }
+    }
+    loadProfile();
+  }, []);
 
   function handleAvatarChange(e) {
     const file = e.target.files[0];
@@ -53,8 +73,30 @@ export function EntrepreneurProfile() {
   async function handleSave(e) {
     e.preventDefault();
     setSaving(true);
-    // TODO: upload avatar to Supabase Storage, update profile row
-    await new Promise((r) => setTimeout(r, 800));
+
+    const { data: { user } } = await supabase.auth.getUser();
+    let avatarUrl = profile?.avatar_url || null;
+
+    if (avatar) {
+      const ext = avatar.name.split(".").pop();
+      const path = `${user.id}/avatar.${ext}`;
+      const { error: uploadError } = await supabase.storage
+        .from("avatars")
+        .upload(path, avatar, { upsert: true });
+
+      if (!uploadError) {
+        const { data: urlData } = supabase.storage
+          .from("avatars")
+          .getPublicUrl(path);
+        avatarUrl = urlData.publicUrl;
+      }
+    }
+
+    await supabase
+      .from("entrepreneurs")
+      .update({ bio, presentation, avatar_url: avatarUrl })
+      .eq("id", user.id);
+
     setSaving(false);
     setSaved(true);
   }

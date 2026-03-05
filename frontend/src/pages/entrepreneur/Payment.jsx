@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
+import { supabase } from "../../lib/supabase";
 import { Navbar } from "../../components/layout/Navbar";
 import { Footer } from "../../components/layout/Footer";
 import { EntrepreneurSidebar } from "../../components/entrepreneur/Sidebar";
@@ -206,9 +207,59 @@ export function Payment() {
       window.scrollTo({ top: 0, behavior: "smooth" });
       return;
     }
+
     setProcessing(true);
-    // TODO: call Stripe via backend API
-    await new Promise((r) => setTimeout(r, 1500));
+    const { data: { user } } = await supabase.auth.getUser();
+
+    // 1. Create Stripe payment intent via backend
+    const res = await fetch(`${import.meta.env.VITE_API_URL}/api/payments/create-intent`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        projectId: project?.id,
+        entrepreneurId: user.id,
+      }),
+    });
+    const { clientSecret, error } = await res.json();
+
+    if (error) {
+      setErrors({ cardNumber: error });
+      setProcessing(false);
+      return;
+    }
+
+    // 2. Confirm card payment with Stripe.js
+    const { loadStripe } = await import("@stripe/stripe-js");
+    const stripeJs = await loadStripe(import.meta.env.VITE_STRIPE_PUBLISHABLE_KEY);
+
+    const { error: stripeError } = await stripeJs.confirmCardPayment(clientSecret, {
+      payment_method: {
+        card: {
+          number: cardNumber.replace(/\s/g, ""),
+          exp_month: parseInt(expiry.split("/")[0]),
+          exp_year: parseInt("20" + expiry.split("/")[1]),
+          cvc: cvv,
+        },
+        billing_details: { name: cardName },
+      },
+    });
+
+    if (stripeError) {
+      setErrors({ cardNumber: stripeError.message });
+      setProcessing(false);
+      return;
+    }
+
+    // 3. Save verification date & time
+    await supabase
+      .from("payments")
+      .update({
+        verification_date: selectedDate.toISOString().split("T")[0],
+        verification_time: selectedTime,
+      })
+      .eq("project_id", project?.id)
+      .eq("entrepreneur_id", user.id);
+
     setProcessing(false);
     setPaid(true);
   }

@@ -1,5 +1,6 @@
 import { useState, useRef, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
+import { supabase } from "../../lib/supabase";
 import { Navbar } from "../../components/layout/Navbar";
 import { Footer } from "../../components/layout/Footer";
 import { EntrepreneurSidebar } from "../../components/entrepreneur/Sidebar";
@@ -137,33 +138,79 @@ function StatCard({ label, value, sub, icon: Icon, accent }) {
 export function EntrepreneurDashboard() {
   const navigate = useNavigate();
   const chatEndRef = useRef(null);
-  const [messages, setMessages] = useState(MOCK_MESSAGES);
+  const [messages, setMessages] = useState([]);
   const [newMsg, setNewMsg] = useState("");
+  const [submissions, setSubmissions] = useState([]);
 
-  const totalViews = MOCK_SUBMISSIONS.reduce((s, sub) => s + sub.views, 0);
-  const totalInterests = MOCK_SUBMISSIONS.reduce((s, sub) => s + sub.interests, 0);
-  const activeCount = MOCK_SUBMISSIONS.filter((s) => s.status !== "failed_screening").length;
+  const totalViews = submissions.reduce((s, sub) => s + (sub.views || 0), 0);
+  const totalInterests = submissions.reduce((s, sub) => s + (sub.interests || 0), 0);
+  const activeCount = submissions.filter((s) => s.status !== "failed_screening").length;
+
+  useEffect(() => {
+    async function loadData() {
+      const { data: { user } } = await supabase.auth.getUser();
+
+      const { data: subs } = await supabase
+        .from("projects")
+        .select("*")
+        .eq("entrepreneur_id", user.id)
+        .order("created_at", { ascending: false });
+
+      if (subs) setSubmissions(subs);
+    }
+    loadData();
+  }, []);
+
+  useEffect(() => {
+    async function loadMessages() {
+      const { data: { user } } = await supabase.auth.getUser();
+
+      const { data } = await supabase
+        .from("messages")
+        .select("*")
+        .eq("entrepreneur_id", user.id)
+        .order("created_at", { ascending: true });
+
+      if (data) setMessages(data);
+
+      const channel = supabase
+        .channel("messages")
+        .on(
+          "postgres_changes",
+          {
+            event: "INSERT",
+            schema: "public",
+            table: "messages",
+            filter: `entrepreneur_id=eq.${user.id}`,
+          },
+          (payload) => {
+            setMessages((prev) => [...prev, payload.new]);
+          }
+        )
+        .subscribe();
+
+      return () => supabase.removeChannel(channel);
+    }
+
+    loadMessages();
+  }, []);
 
   useEffect(() => {
     chatEndRef.current?.scrollIntoView({ behavior: "smooth" });
   }, [messages]);
 
-  function sendMessage() {
+  async function sendMessage() {
     if (!newMsg.trim()) return;
-    const now = new Date();
-    setMessages((prev) => [
-      ...prev,
-      {
-        id: Date.now(),
-        sender: "user",
-        name: "Jane Doe",
-        text: newMsg.trim(),
-        time: `${String(now.getHours()).padStart(2, "0")}:${String(now.getMinutes()).padStart(2, "0")}`,
-        date: "Today",
-      },
-    ]);
+    const { data: { user } } = await supabase.auth.getUser();
+
+    await supabase.from("messages").insert({
+      entrepreneur_id: user.id,
+      sender: "user",
+      sender_name: "Jane Doe",
+      text: newMsg.trim(),
+    });
+
     setNewMsg("");
-    // TODO: send via Supabase Realtime / websocket
   }
 
   return (

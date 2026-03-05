@@ -1,5 +1,6 @@
 import { useState, useRef } from "react";
 import { useNavigate } from "react-router-dom";
+import { supabase } from "../../lib/supabase";
 import { Navbar } from "../../components/layout/Navbar";
 import { Footer } from "../../components/layout/Footer";
 import { EntrepreneurSidebar } from "../../components/entrepreneur/Sidebar";
@@ -178,7 +179,7 @@ export function SubmitProject() {
     return errs;
   }
 
-  function handleSubmit(e) {
+  async function handleSubmit(e) {
     e.preventDefault();
     const errs = validate();
     if (Object.keys(errs).length > 0) {
@@ -186,8 +187,53 @@ export function SubmitProject() {
       window.scrollTo({ top: 0, behavior: "smooth" });
       return;
     }
-    // Pass form data to payment page via state
-    navigate("/entrepreneur/payment", { state: { project: form } });
+
+    const { data: { user } } = await supabase.auth.getUser();
+
+    // Upload pitch PDF
+    const pitchPath = `${user.id}/${Date.now()}-pitch.pdf`;
+    const { error: pitchError } = await supabase.storage
+      .from("project-docs")
+      .upload(pitchPath, form.pitchFile);
+
+    if (pitchError) {
+      setErrors({ pitchFile: "Upload failed. Please try again." });
+      return;
+    }
+
+    // Upload business plan PDF (optional)
+    let bpPath = null;
+    if (form.businessPlanFile) {
+      bpPath = `${user.id}/${Date.now()}-business-plan.pdf`;
+      await supabase.storage.from("project-docs").upload(bpPath, form.businessPlanFile);
+    }
+
+    // Insert project row (status = pending_payment until Stripe confirms)
+    const { data: project, error: insertError } = await supabase
+      .from("projects")
+      .insert({
+        entrepreneur_id: user.id,
+        title: form.title,
+        category: form.category,
+        stage: form.stage,
+        amount_seeking: form.amountSeeking,
+        country: form.country,
+        summary: form.summary,
+        pitch_url: pitchPath,
+        business_plan_url: bpPath,
+        status: "pending_payment",
+      })
+      .select()
+      .single();
+
+    if (insertError) {
+      setErrors({ title: "Submission failed. Please try again." });
+      return;
+    }
+
+    navigate("/entrepreneur/payment", {
+      state: { project: { ...form, id: project.id } },
+    });
   }
 
   return (

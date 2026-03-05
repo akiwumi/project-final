@@ -3,6 +3,8 @@ import { useNavigate } from "react-router-dom";
 import { Navbar } from "../../components/layout/Navbar";
 import { Footer } from "../../components/layout/Footer";
 import { ChevronDown, Eye, EyeOff, Rocket } from "lucide-react";
+import { supabase } from "../../lib/supabase";
+
 
 const COUNTRY_CODES = [
   { code: "+1", label: "🇺🇸 +1" },
@@ -124,8 +126,43 @@ export function EntrepreneurRegister() {
       window.scrollTo({ top: 0, behavior: "smooth" });
       return;
     }
-    // TODO: call Supabase auth.signUp() + insert entrepreneur profile row
-    // For now simulate email confirmation sent
+
+    // 1. Create auth user — Supabase sends confirmation email automatically
+    const { data: authData, error: authError } = await supabase.auth.signUp({
+      email: form.email,
+      password: form.password,
+      options: {
+        emailRedirectTo: `${window.location.origin}/welcome`,
+      },
+    });
+
+    if (authError) {
+      setErrors({ email: authError.message });
+      return;
+    }
+
+    // 2. Insert entrepreneur profile row
+    const { error: profileError } = await supabase.from("entrepreneurs").insert({
+      id: authData.user.id,
+      first_name: form.firstName,
+      last_name: form.lastName,
+      email: form.email,
+      phone: `${form.phoneCode} ${form.phone}`,
+      company_name: form.companyName,
+      company_type: form.companyType,
+      years_operating: form.yearsOperating ? parseInt(form.yearsOperating) : null,
+      employees: form.employees,
+      website: form.website || null,
+      company_address: form.companyAddress,
+      city: form.city,
+      country: form.country,
+    });
+
+    if (profileError) {
+      console.error("Profile insert error:", profileError);
+      // Auth user was created — don't block UX, show confirmation anyway
+    }
+
     setSubmitted(true);
   }
 

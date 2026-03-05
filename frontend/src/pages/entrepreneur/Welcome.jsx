@@ -1,19 +1,8 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { Navbar } from "../../components/layout/Navbar";
 import { CheckCircle, ChevronDown, ChevronUp, Shield } from "lucide-react";
-
-// At the top of Welcome.jsx — add this useEffect
 import { supabase } from "../../lib/supabase";
-
-useEffect(() => {
-  supabase.auth.getSession().then(({ data: { session } }) => {
-    if (!session) {
-      // Not confirmed yet — redirect back
-      navigate("/register");
-    }
-  });
-}, []);
 
 const TC_SECTIONS = [
   {
@@ -94,13 +83,36 @@ export function Welcome() {
   const [openSection, setOpenSection] = useState(null);
   const [accepted, setAccepted] = useState(false);
 
+  useEffect(() => {
+    supabase.auth.getSession().then(({ data: { session } }) => {
+      if (!session) {
+        navigate("/register");
+      }
+    });
+  }, []);
+
   function toggle(id) {
     setOpenSection((prev) => (prev === id ? null : id));
   }
 
-  function handleAccept() {
+  async function handleAccept() {
     if (!accepted) return;
-    // TODO: mark user as terms_accepted in Supabase
+
+    const { data: { user } } = await supabase.auth.getUser();
+
+    const { error } = await supabase
+      .from("entrepreneurs")
+      .update({
+        terms_accepted: true,
+        terms_accepted_at: new Date().toISOString(),
+      })
+      .eq("id", user.id);
+
+    if (error) {
+      console.error("T&C update error:", error);
+      return;
+    }
+
     navigate("/entrepreneur/profile");
   }
 
