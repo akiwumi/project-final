@@ -35,6 +35,15 @@ const EMPLOYEE_RANGES = [
   "500+",
 ];
 
+function validatePassword(password) {
+  if (!password || password.length < 8) return "Password must be at least 8 characters";
+  if (!/[A-Z]/.test(password)) return "Password must include at least one uppercase letter";
+  if (!/[a-z]/.test(password)) return "Password must include at least one lowercase letter";
+  if (!/[0-9]/.test(password)) return "Password must include at least one number";
+  if (!/[^A-Za-z0-9]/.test(password)) return "Password must include at least one special character";
+  return null;
+}
+
 function InputField({ label, required, error, children }) {
   return (
     <div className="flex flex-col gap-1.5">
@@ -105,7 +114,8 @@ export function EntrepreneurRegister() {
     if (!form.lastName.trim()) errs.lastName = "Last name is required";
     if (!form.email.trim() || !/\S+@\S+\.\S+/.test(form.email)) errs.email = "Valid email is required";
     if (!form.phone.trim()) errs.phone = "Phone number is required";
-    if (!form.password || form.password.length < 8) errs.password = "Password must be at least 8 characters";
+    const passwordError = validatePassword(form.password);
+    if (passwordError) errs.password = passwordError;
     if (form.password !== form.confirmPassword) errs.confirmPassword = "Passwords do not match";
     if (!form.companyName.trim()) errs.companyName = "Company name is required";
     if (!form.employees) errs.employees = "Please select a range";
