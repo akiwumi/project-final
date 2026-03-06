@@ -9,7 +9,6 @@ import {
   Building2,
   Globe,
   MapPin,
-  Users,
   PenLine,
   Save,
   CheckCircle,
@@ -53,7 +52,7 @@ export function EntrepreneurProfile() {
         .from("entrepreneurs")
         .select("*")
         .eq("id", user.id)
-        .single();
+        .maybeSingle();
       if (data) {
         setProfile(data);
         setBio(data.bio || "");
