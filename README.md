@@ -69,6 +69,7 @@ project-final/
 │       │   ├── Advice.jsx           # /advice — article grid, newsletter CTA
 │       │   └── entrepreneur/
 │       │       ├── Register.jsx     # /register — full registration form
+│       │       ├── Login.jsx        # /login — returning user sign-in
 │       │       ├── Welcome.jsx      # /welcome — T&C acceptance after email confirm
 │       │       ├── Profile.jsx      # /entrepreneur/profile — avatar, bio, details
 │       │       ├── SubmitProject.jsx # /entrepreneur/submit — project + PDF upload
@@ -77,10 +78,11 @@ project-final/
 │       ├── App.jsx                  # All routes
 │       └── index.css
 │
+├── frontend/
+│   └── vercel.json              # SPA rewrite rule for Vercel deployment
 ├── BACKEND_WIRING.md    # Step-by-step guide to wire Supabase, Stripe, and realtime
 ├── DESIGN_SYSTEM.md     # Palette, typography, spacing, component patterns
 ├── Build_Guide.md       # Full application spec and build order
-├── vercel.json          # SPA rewrite rule for Vercel deployment
 ├── Procfile             # Heroku/Render process definition for backend
 └── package.json         # Root scripts: postinstall, dev:backend, dev:frontend
 ```
@@ -107,6 +109,7 @@ project-final/
 | Path | Page |
 |---|---|
 | `/register` | Registration form (personal + company details) |
+| `/login` | Returning user sign-in |
 | `/welcome` | Email confirmation → Terms & Conditions acceptance |
 | `/entrepreneur/profile` | Profile — avatar, bio, company presentation |
 | `/entrepreneur/submit` | Submit a project (PDF upload, categories, funding stage) |
@@ -237,6 +240,6 @@ Use these as Tailwind arbitrary values: `bg-[var(--ds-accent)]`, `text-[var(--ds
 
 ## Deployment
 
-- **Frontend:** Vercel — `vercel.json` already contains the SPA rewrite rule
+- **Frontend:** Vercel — `frontend/vercel.json` contains the SPA rewrite rule
 - **Backend:** Render or Heroku — `Procfile` defines `web: npm start --prefix backend`
 - See [`BACKEND_WIRING.md`](BACKEND_WIRING.md) → Section 16 for the full deployment checklist

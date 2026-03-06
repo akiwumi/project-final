@@ -151,8 +151,11 @@ export function EntrepreneurRegister() {
       return;
     }
 
-    // 2. Insert entrepreneur profile row
-    const { error: profileError } = await supabase.from("entrepreneurs").insert({
+    // Save form data to localStorage so Welcome.jsx can create the entrepreneurs
+    // row once the session is established after email confirmation. The direct
+    // INSERT below will succeed if email-confirm is disabled; if it is enabled
+    // auth.uid() is null and RLS blocks it, so localStorage is the fallback.
+    const entrepreneurData = {
       id: authData.user.id,
       first_name: form.firstName,
       last_name: form.lastName,
@@ -166,12 +169,11 @@ export function EntrepreneurRegister() {
       company_address: form.companyAddress,
       city: form.city,
       country: form.country,
-    });
+    };
+    localStorage.setItem("pendingEntrepreneur", JSON.stringify(entrepreneurData));
 
-    if (profileError) {
-      console.error("Profile insert error:", profileError);
-      // Auth user was created — don't block UX, show confirmation anyway
-    }
+    // 2. Insert entrepreneur profile row (succeeds immediately when no email confirm)
+    await supabase.from("entrepreneurs").insert(entrepreneurData);
 
     setSubmitted(true);
   }

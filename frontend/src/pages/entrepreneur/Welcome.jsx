@@ -84,11 +84,38 @@ export function Welcome() {
   const [accepted, setAccepted] = useState(false);
 
   useEffect(() => {
-    supabase.auth.getSession().then(({ data: { session } }) => {
+    async function init() {
+      const { data: { session } } = await supabase.auth.getSession();
       if (!session) {
         navigate("/register");
+        return;
       }
-    });
+
+      // Ensure the entrepreneurs row exists. If email confirmation was enabled,
+      // the INSERT in Register.jsx was blocked by RLS (no session at that point).
+      // We retry here now that the user is authenticated.
+      const { data: existing } = await supabase
+        .from("entrepreneurs")
+        .select("id")
+        .eq("id", session.user.id)
+        .maybeSingle();
+
+      if (!existing) {
+        const pendingStr = localStorage.getItem("pendingEntrepreneur");
+        if (pendingStr) {
+          try {
+            const pendingData = JSON.parse(pendingStr);
+            if (pendingData.id === session.user.id) {
+              await supabase.from("entrepreneurs").insert(pendingData);
+              localStorage.removeItem("pendingEntrepreneur");
+            }
+          } catch (e) {
+            console.error("Failed to create entrepreneur profile:", e);
+          }
+        }
+      }
+    }
+    init();
   }, []);
 
   function toggle(id) {
