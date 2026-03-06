@@ -47,7 +47,9 @@ export function EntrepreneurProfile() {
 
   useEffect(() => {
     async function loadProfile() {
-      const { data: { user } } = await supabase.auth.getUser();
+      const { data: { session } } = await supabase.auth.getSession();
+      const user = session?.user;
+      if (!user) return;
       const { data } = await supabase
         .from("entrepreneurs")
         .select("*")
@@ -75,7 +77,9 @@ export function EntrepreneurProfile() {
     setSaving(true);
     setSaveError("");
 
-    const { data: { user } } = await supabase.auth.getUser();
+    const { data: { session } } = await supabase.auth.getSession();
+    const user = session?.user;
+    if (!user) { setSaving(false); setSaveError("Not authenticated."); return; }
     let avatarUrl = profile?.avatar_url || null;
 
     if (avatar) {
