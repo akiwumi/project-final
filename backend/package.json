@@ -2,21 +2,21 @@
   "name": "project-final-backend",
   "version": "1.0.0",
   "description": "Server part of final project",
+  "type": "module",
   "scripts": {
-    "start": "babel-node server.js",
-    "dev": "nodemon server.js --exec babel-node"
+    "start": "node server.js",
+    "dev": "nodemon server.js"
   },
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "@babel/core": "^7.17.9",
-    "@babel/node": "^7.16.8",
-    "@babel/preset-env": "^7.16.11",
     "@supabase/supabase-js": "^2.97.0",
     "cors": "^2.8.5",
     "dotenv": "^17.3.1",
     "express": "^4.17.3",
-    "mongoose": "^8.4.0",
+    "stripe": "^17.7.0"
+  },
+  "devDependencies": {
     "nodemon": "^3.0.1"
   }
 }

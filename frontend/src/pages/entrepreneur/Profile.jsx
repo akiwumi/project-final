@@ -17,21 +17,6 @@ import {
 const inputCls =
   "w-full px-4 py-2.5 rounded-xl border border-[var(--ds-border)] bg-white text-[var(--ds-text-primary)] placeholder:text-[var(--ds-text-muted)] focus:outline-none focus:ring-2 focus:ring-[var(--ds-accent)] focus:border-transparent text-sm";
 
-// Mock data — in production, load from Supabase
-const MOCK_USER = {
-  firstName: "Jane",
-  lastName: "Doe",
-  email: "jane@acmeltd.com",
-  phone: "+254 712 345 678",
-  companyName: "Acme Ltd.",
-  companyType: "startup",
-  employees: "6–10",
-  website: "https://acmeltd.com",
-  city: "Nairobi",
-  country: "Kenya",
-  companyAddress: "123 Westlands Road",
-};
-
 export function EntrepreneurProfile() {
   const navigate = useNavigate();
   const fileInputRef = useRef(null);
@@ -49,12 +34,20 @@ export function EntrepreneurProfile() {
     async function loadProfile() {
       const { data: { session } } = await supabase.auth.getSession();
       const user = session?.user;
-      if (!user) return;
-      const { data } = await supabase
+      if (!user) {
+        console.warn("Profile: no authenticated session found");
+        return;
+      }
+      const { data, error } = await supabase
         .from("entrepreneurs")
         .select("*")
         .eq("id", user.id)
         .maybeSingle();
+      if (error) {
+        console.error("Profile load error:", error);
+        setSaveError(`Failed to load profile: ${error.message}`);
+        return;
+      }
       if (data) {
         setProfile(data);
         setBio(data.bio || "");
@@ -75,6 +68,7 @@ export function EntrepreneurProfile() {
   async function handleSave(e) {
     e.preventDefault();
     setSaving(true);
+    setSaved(false);
     setSaveError("");
 
     const { data: { session } } = await supabase.auth.getSession();
@@ -114,7 +108,9 @@ export function EntrepreneurProfile() {
     }
   }
 
-  const initials = `${MOCK_USER.firstName[0]}${MOCK_USER.lastName[0]}`;
+  const firstName = profile?.first_name || "";
+  const lastName = profile?.last_name || "";
+  const initials = firstName && lastName ? `${firstName[0]}${lastName[0]}` : "?";
 
   return (
     <div className="min-h-screen bg-[var(--ds-bg-light)]">
@@ -183,7 +179,7 @@ export function EntrepreneurProfile() {
                 </div>
                 <div>
                   <p className="text-sm font-medium text-[var(--ds-text-primary)] mb-1">
-                    {MOCK_USER.firstName} {MOCK_USER.lastName}
+                    {firstName} {lastName}
                   </p>
                   <p className="text-xs text-[var(--ds-text-muted)] mb-3">
                     JPG, PNG or GIF — max 5 MB
@@ -247,46 +243,48 @@ export function EntrepreneurProfile() {
               </h2>
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 {[
-                  { label: "First name", value: MOCK_USER.firstName },
-                  { label: "Last name", value: MOCK_USER.lastName },
-                  { label: "Email", value: MOCK_USER.email },
-                  { label: "Phone", value: MOCK_USER.phone },
-                  { label: "Company name", value: MOCK_USER.companyName },
+                  { label: "First name", value: profile?.first_name },
+                  { label: "Last name", value: profile?.last_name },
+                  { label: "Email", value: profile?.email },
+                  { label: "Phone", value: profile?.phone },
+                  { label: "Company name", value: profile?.company_name },
                   {
                     label: "Company type",
                     value:
-                      MOCK_USER.companyType === "startup"
+                      profile?.company_type === "startup"
                         ? "Startup"
                         : "Established company",
                   },
-                  { label: "Employees", value: MOCK_USER.employees },
-                  { label: "Website", value: MOCK_USER.website || "—" },
+                  { label: "Employees", value: profile?.employees },
+                  { label: "Website", value: profile?.website || "—" },
                 ].map((field) => (
                   <div key={field.label}>
                     <p className="text-xs text-[var(--ds-text-muted)] mb-0.5">
                       {field.label}
                     </p>
                     <p className="text-sm font-medium text-[var(--ds-text-primary)]">
-                      {field.value}
+                      {field.value || "—"}
                     </p>
                   </div>
                 ))}
               </div>
               <div className="mt-4 flex items-center gap-2 text-xs text-[var(--ds-text-muted)]">
                 <MapPin className="w-3.5 h-3.5" />
-                {MOCK_USER.companyAddress}, {MOCK_USER.city}, {MOCK_USER.country}
+                {profile?.company_address || "—"}, {profile?.city || "—"}, {profile?.country || "—"}
               </div>
+              {profile?.website && (
               <div className="mt-1 flex items-center gap-2 text-xs text-[var(--ds-text-muted)]">
                 <Globe className="w-3.5 h-3.5" />
                 <a
-                  href={MOCK_USER.website}
+                  href={profile.website}
                   target="_blank"
                   rel="noopener noreferrer"
                   className="text-[var(--ds-accent)] underline"
                 >
-                  {MOCK_USER.website}
+                  {profile.website}
                 </a>
               </div>
+              )}
               <p className="text-xs text-[var(--ds-text-muted)] mt-3">
                 To update registration details, contact{" "}
                 <a
