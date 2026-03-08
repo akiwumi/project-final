@@ -24,8 +24,8 @@ Connect Africa reduces deal friction and increases trust in cross-border African
 
 | Layer | Technologies |
 |---|---|
-| **Frontend** | React 18, Vite, Tailwind CSS v4, Framer Motion, React Router v7, Lucide React |
-| **Backend** | Node.js, Express, Babel (ES modules) |
+| **Frontend** | React 18, Vite 6, Tailwind CSS v4, Framer Motion, React Router v7, Lucide React, Supabase client |
+| **Backend** | Node.js (native ES modules), Express, CORS, dotenv, Supabase, Nodemon |
 | **Database / Auth / Storage** | Supabase (auth, PostgreSQL, storage, realtime) |
 | **Payments** | Stripe (planned — wiring guide in `BACKEND_WIRING.md`) |
 
@@ -42,7 +42,7 @@ project-final/
 │   └── .env                         # Secrets (not committed)
 │
 ├── frontend/
-│   └── src/
+│   ├── src/
 │       ├── design-system/
 │       │   └── theme.css            # CSS design tokens (colours, type, spacing)
 │       ├── components/
@@ -54,8 +54,7 @@ project-final/
 │       │   │   ├── HowItWorks.jsx
 │       │   │   ├── ProblemSolution.jsx
 │       │   │   ├── StatsSection.jsx
-│       │   │   ├── Testimonials.jsx
-│       │   │   └── CTASection.jsx
+│       │   │   └── Testimonials.jsx
 │       │   └── entrepreneur/
 │       │       └── Sidebar.jsx      # Sidebar navigation for entrepreneur area
 │       ├── pages/
@@ -77,8 +76,6 @@ project-final/
 │       │       └── Dashboard.jsx    # /entrepreneur/dashboard — tracker + chat
 │       ├── App.jsx                  # All routes
 │       └── index.css
-│
-├── frontend/
 │   └── vercel.json              # SPA rewrite rule for Vercel deployment
 ├── BACKEND_WIRING.md    # Step-by-step guide to wire Supabase, Stripe, and realtime
 ├── DESIGN_SYSTEM.md     # Palette, typography, spacing, component patterns
