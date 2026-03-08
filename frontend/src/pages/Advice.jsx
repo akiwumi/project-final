@@ -155,24 +155,6 @@ const QUICK_TIPS = [
   },
 ];
 
-const CATEGORIES_ICONS = {
-  "For Entrepreneurs": Rocket,
-  "For Investors": TrendingUp,
-  "Due Diligence": ShieldCheck,
-  "Legal & Compliance": BookOpen,
-  "Market Insights": Globe2,
-  "Fundraising": TrendingUp,
-};
-
-function Rocket(props) {
-  return (
-    <svg {...props} fill="none" viewBox="0 0 24 24" stroke="currentColor">
-      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5}
-        d="M15.59 14.37a6 6 0 01-5.84 7.38v-4.82m5.84-2.56a14.98 14.98 0 006.16-12.12A14.98 14.98 0 009.63 8.41m5.96 5.96a14.926 14.926 0 01-5.84 2.13M8.29 14.52L3 21l6.57-1.85M12 2a9.96 9.96 0 014.5 8.4 9.96 9.96 0 01-4.5 8.4A9.96 9.96 0 017.5 10.4 9.96 9.96 0 0112 2z" />
-    </svg>
-  );
-}
-
 function ArticleCard({ article, featured = false }) {
   if (featured) {
     return (

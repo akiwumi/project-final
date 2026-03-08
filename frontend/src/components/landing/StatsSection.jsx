@@ -26,7 +26,7 @@ function AnimatedCounter({ value, suffix = "", inView }) {
       }
     }, 50);
     return () => clearInterval(timer);
-  }, [value, inView, suffix]);
+  }, [value, inView]);
   return (
     <span>
       {count}

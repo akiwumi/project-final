@@ -13,10 +13,6 @@ app.use(
 );
 app.use(express.json());
 
-app.get("/", (req, res) => {
-  res.send("Hello Technigo!");
-});
-
 // GET /api/projects/:id/download/:type  (type = "pitch" or "businessPlan")
 app.get("/api/projects/:id/download/:type", async (req, res) => {
   const { id, type } = req.params;
@@ -37,7 +33,6 @@ app.get("/api/projects/:id/download/:type", async (req, res) => {
   res.json({ url: data.signedUrl });
 });
 
-// Start the server
 app.listen(port, () => {
   console.log(`Server running on http://localhost:${port}`);
 });

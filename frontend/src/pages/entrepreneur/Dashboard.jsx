@@ -17,73 +17,6 @@ import {
   ChevronRight,
 } from "lucide-react";
 
-// ──────────────────────────────────────────
-// Mock data — replace with Supabase queries
-// ──────────────────────────────────────────
-
-const MOCK_SUBMISSIONS = [
-  {
-    id: "sub-001",
-    title: "SolarGrid Africa — Rural Solar Micro-grids",
-    category: "Clean Energy & CleanTech",
-    stage: "Seed",
-    amount: "€500,000",
-    submittedAt: "2026-02-14",
-    status: "under_review",
-    views: 47,
-    interests: 3,
-  },
-  {
-    id: "sub-002",
-    title: "AgriPay — Smallholder Farmer Payments",
-    category: "Financial Services & FinTech",
-    stage: "Pre-Seed",
-    amount: "€150,000",
-    submittedAt: "2026-01-30",
-    status: "approved",
-    views: 128,
-    interests: 11,
-  },
-  {
-    id: "sub-003",
-    title: "HealthLink Kenya — Telemedicine Platform",
-    category: "Health & HealthTech",
-    stage: "Series A",
-    amount: "€2,000,000",
-    submittedAt: "2025-12-05",
-    status: "failed_screening",
-    views: 22,
-    interests: 0,
-  },
-];
-
-const MOCK_MESSAGES = [
-  {
-    id: 1,
-    sender: "admin",
-    name: "Connect Africa Team",
-    text: "Welcome! Your submission SolarGrid Africa has been received and is currently under review. We'll notify you within 5 business days.",
-    time: "10:32",
-    date: "Today",
-  },
-  {
-    id: 2,
-    sender: "user",
-    name: "Jane Doe",
-    text: "Thank you! Is there any additional documentation I should prepare?",
-    time: "10:45",
-    date: "Today",
-  },
-  {
-    id: 3,
-    sender: "admin",
-    name: "Connect Africa Team",
-    text: "Your pitch deck looks great. We may request audited financials if the project advances to stage 2. We'll be in touch.",
-    time: "11:02",
-    date: "Today",
-  },
-];
-
 const STATUS_CONFIG = {
   under_review: {
     label: "Under Review",
@@ -248,7 +181,7 @@ export function EntrepreneurDashboard() {
             <StatCard
               label="Active Submissions"
               value={activeCount}
-              sub={`of ${MOCK_SUBMISSIONS.length} total`}
+              sub={`of ${submissions.length} total`}
               icon={TrendingUp}
             />
             <StatCard
@@ -271,7 +204,7 @@ export function EntrepreneurDashboard() {
               My Submissions
             </h2>
             <div className="space-y-3">
-              {MOCK_SUBMISSIONS.map((sub) => (
+              {submissions.map((sub) => (
                 <div
                   key={sub.id}
                   className="bg-white rounded-2xl border border-[var(--ds-border)] p-5 flex flex-col sm:flex-row sm:items-center gap-4"
