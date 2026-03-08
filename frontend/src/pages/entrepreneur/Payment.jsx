@@ -5,22 +5,19 @@ import { Navbar } from "../../components/layout/Navbar";
 import { Footer } from "../../components/layout/Footer";
 import { EntrepreneurSidebar } from "../../components/entrepreneur/Sidebar";
 import {
-  CreditCard,
   Calendar,
   Clock,
-  Shield,
   ChevronLeft,
   ChevronRight,
   CheckCircle,
   AlertCircle,
 } from "lucide-react";
 
-// Generate available days (next 14 working days from today)
 function getWorkingDays(count = 14) {
   const days = [];
   const d = new Date();
   d.setHours(0, 0, 0, 0);
-  d.setDate(d.getDate() + 1); // start from tomorrow
+  d.setDate(d.getDate() + 1);
   while (days.length < count) {
     const dow = d.getDay();
     if (dow !== 0 && dow !== 6) {
@@ -31,7 +28,6 @@ function getWorkingDays(count = 14) {
   return days;
 }
 
-// Generate 30-min slots 09:00–16:00 GMT (last slot starts at 15:30)
 function generateSlots() {
   const slots = [];
   for (let h = 9; h < 16; h++) {
@@ -158,9 +154,6 @@ function MiniCalendar({ selectedDate, onSelect }) {
   );
 }
 
-const inputCls =
-  "w-full px-4 py-2.5 rounded-xl border border-[var(--ds-border)] bg-white text-[var(--ds-text-primary)] placeholder:text-[var(--ds-text-muted)] focus:outline-none focus:ring-2 focus:ring-[var(--ds-accent)] focus:border-transparent text-sm";
-
 export function Payment() {
   const navigate = useNavigate();
   const location = useLocation();
@@ -168,103 +161,50 @@ export function Payment() {
 
   const [selectedDate, setSelectedDate] = useState(null);
   const [selectedTime, setSelectedTime] = useState(null);
-  const [cardNumber, setCardNumber] = useState("");
-  const [cardName, setCardName] = useState("");
-  const [expiry, setExpiry] = useState("");
-  const [cvv, setCvv] = useState("");
-  const [agreed, setAgreed] = useState(false);
   const [errors, setErrors] = useState({});
   const [processing, setProcessing] = useState(false);
-  const [paid, setPaid] = useState(false);
-
-  function formatCard(val) {
-    return val.replace(/\D/g, "").slice(0, 16).replace(/(.{4})/g, "$1 ").trim();
-  }
-  function formatExpiry(val) {
-    const digits = val.replace(/\D/g, "").slice(0, 4);
-    if (digits.length >= 3) return `${digits.slice(0, 2)}/${digits.slice(2)}`;
-    return digits;
-  }
+  const [submitted, setSubmitted] = useState(false);
 
   function validate() {
     const errs = {};
     if (!selectedDate) errs.date = "Please select a verification date";
     if (!selectedTime) errs.time = "Please select a time slot";
-    if (!cardName.trim()) errs.cardName = "Cardholder name is required";
-    const rawCard = cardNumber.replace(/\s/g, "");
-    if (rawCard.length !== 16) errs.cardNumber = "Enter a valid 16-digit card number";
-    if (!expiry.match(/^\d{2}\/\d{2}$/)) errs.expiry = "Enter expiry as MM/YY";
-    if (!cvv.match(/^\d{3,4}$/)) errs.cvv = "Enter a valid CVV";
-    if (!agreed) errs.agreed = "You must accept the payment terms";
     return errs;
   }
 
-  async function handlePay(e) {
+  async function handleSubmit(e) {
     e.preventDefault();
     const errs = validate();
     if (Object.keys(errs).length > 0) {
       setErrors(errs);
-      window.scrollTo({ top: 0, behavior: "smooth" });
       return;
     }
 
     setProcessing(true);
     const { data: { user } } = await supabase.auth.getUser();
 
-    // 1. Create Stripe payment intent via backend
-    const res = await fetch(`${import.meta.env.VITE_API_URL}/api/payments/create-intent`, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        projectId: project?.id,
-        entrepreneurId: user.id,
-      }),
-    });
-    const { clientSecret, error } = await res.json();
-
-    if (error) {
-      setErrors({ cardNumber: error });
-      setProcessing(false);
-      return;
-    }
-
-    // 2. Confirm card payment with Stripe.js
-    const { loadStripe } = await import("@stripe/stripe-js");
-    const stripeJs = await loadStripe(import.meta.env.VITE_STRIPE_PUBLISHABLE_KEY);
-
-    const { error: stripeError } = await stripeJs.confirmCardPayment(clientSecret, {
-      payment_method: {
-        card: {
-          number: cardNumber.replace(/\s/g, ""),
-          exp_month: parseInt(expiry.split("/")[0]),
-          exp_year: parseInt("20" + expiry.split("/")[1]),
-          cvc: cvv,
-        },
-        billing_details: { name: cardName },
-      },
-    });
-
-    if (stripeError) {
-      setErrors({ cardNumber: stripeError.message });
-      setProcessing(false);
-      return;
-    }
-
-    // 3. Save verification date & time
-    await supabase
-      .from("payments")
+    const { error } = await supabase
+      .from("projects")
       .update({
+        status: "under_review",
+        submitted_at: new Date().toISOString(),
         verification_date: selectedDate.toISOString().split("T")[0],
         verification_time: selectedTime,
       })
-      .eq("project_id", project?.id)
+      .eq("id", project?.id)
       .eq("entrepreneur_id", user.id);
 
     setProcessing(false);
-    setPaid(true);
+
+    if (error) {
+      setErrors({ date: "Something went wrong. Please try again." });
+      return;
+    }
+
+    setSubmitted(true);
   }
 
-  if (paid) {
+  if (submitted) {
     return (
       <div className="min-h-screen bg-[var(--ds-bg-light)]">
         <Navbar />
@@ -282,7 +222,7 @@ export function Payment() {
                 Submission received!
               </h1>
               <p className="text-sm text-[var(--ds-text-secondary)] leading-relaxed mb-2">
-                Payment of <strong>€1,000</strong> processed successfully.
+                Your project has been submitted for review.
               </p>
               <p className="text-sm text-[var(--ds-text-secondary)] leading-relaxed mb-6">
                 Your phone verification is scheduled for{" "}
@@ -317,11 +257,10 @@ export function Payment() {
                 className="text-2xl font-bold text-[var(--ds-text-primary)] mb-1"
                 style={{ fontFamily: "var(--ds-font-display)" }}
               >
-                Payment & Verification
+                Schedule Verification
               </h1>
               <p className="text-sm text-[var(--ds-text-secondary)]">
-                Complete payment and schedule your phone verification call to finalise your
-                submission.
+                Schedule your phone verification call to finalise your submission.
               </p>
             </div>
 
@@ -332,38 +271,7 @@ export function Payment() {
               </div>
             )}
 
-            <form onSubmit={handlePay} noValidate className="space-y-6">
-              {/* Order summary */}
-              <section className="bg-white rounded-2xl border border-[var(--ds-border)] p-6">
-                <h2 className="text-base font-semibold text-[var(--ds-text-primary)] mb-4">
-                  Order Summary
-                </h2>
-                <div className="flex items-center justify-between py-3 border-b border-[var(--ds-border)]">
-                  <div>
-                    <p className="text-sm font-medium text-[var(--ds-text-primary)]">
-                      {project?.title || "Project Submission"}
-                    </p>
-                    <p className="text-xs text-[var(--ds-text-muted)] mt-0.5">
-                      One-time submission fee
-                    </p>
-                  </div>
-                  <span className="text-sm font-bold text-[var(--ds-text-primary)]">€1,000.00</span>
-                </div>
-                <div className="flex items-center justify-between pt-3">
-                  <span className="text-sm font-semibold text-[var(--ds-text-primary)]">Total</span>
-                  <span className="text-lg font-bold text-[var(--ds-text-primary)]">€1,000.00</span>
-                </div>
-
-                {/* Refund notice */}
-                <div className="mt-4 p-3 rounded-xl bg-[var(--ds-accent)]/5 border border-[var(--ds-accent)]/20 text-xs text-[var(--ds-text-secondary)] leading-relaxed">
-                  <strong className="text-[var(--ds-text-primary)]">Refund policy:</strong>{" "}
-                  If your project fails the initial screening, €800 (80%) will be refunded
-                  within 14 business days. The remaining €200 (20%) is retained as a
-                  non-refundable administration fee.
-                </div>
-              </section>
-
-              {/* Phone verification scheduling */}
+            <form onSubmit={handleSubmit} noValidate className="space-y-6">
               <section className="bg-white rounded-2xl border border-[var(--ds-border)] p-6">
                 <h2 className="text-base font-semibold text-[var(--ds-text-primary)] mb-1 flex items-center gap-2">
                   <Calendar className="w-4 h-4 text-[var(--ds-accent)]" />
@@ -375,7 +283,6 @@ export function Payment() {
                 </p>
 
                 <div className="flex flex-col lg:flex-row gap-6">
-                  {/* Calendar */}
                   <div className="flex-1">
                     <MiniCalendar
                       selectedDate={selectedDate}
@@ -390,7 +297,6 @@ export function Payment() {
                     )}
                   </div>
 
-                  {/* Time slots */}
                   <div className="flex-1">
                     {selectedDate ? (
                       <div>
@@ -439,137 +345,12 @@ export function Payment() {
                 )}
               </section>
 
-              {/* Card payment */}
-              <section className="bg-white rounded-2xl border border-[var(--ds-border)] p-6">
-                <h2 className="text-base font-semibold text-[var(--ds-text-primary)] mb-1 flex items-center gap-2">
-                  <CreditCard className="w-4 h-4 text-[var(--ds-accent)]" />
-                  Payment Details
-                </h2>
-                <p className="text-xs text-[var(--ds-text-muted)] mb-5 flex items-center gap-1">
-                  <Shield className="w-3.5 h-3.5" />
-                  Secured by 256-bit SSL encryption
-                </p>
-
-                <div className="space-y-4">
-                  <div>
-                    <label className="block text-sm font-medium text-[var(--ds-text-primary)] mb-1.5">
-                      Cardholder name <span className="text-red-500">*</span>
-                    </label>
-                    <input
-                      type="text"
-                      className={inputCls}
-                      placeholder="Jane Doe"
-                      value={cardName}
-                      onChange={(e) => {
-                        setCardName(e.target.value);
-                        setErrors((p) => ({ ...p, cardName: undefined }));
-                      }}
-                    />
-                    {errors.cardName && (
-                      <p className="text-xs text-red-500 mt-1">{errors.cardName}</p>
-                    )}
-                  </div>
-
-                  <div>
-                    <label className="block text-sm font-medium text-[var(--ds-text-primary)] mb-1.5">
-                      Card number <span className="text-red-500">*</span>
-                    </label>
-                    <input
-                      type="text"
-                      className={inputCls}
-                      placeholder="1234 5678 9012 3456"
-                      value={cardNumber}
-                      onChange={(e) => {
-                        setCardNumber(formatCard(e.target.value));
-                        setErrors((p) => ({ ...p, cardNumber: undefined }));
-                      }}
-                      inputMode="numeric"
-                    />
-                    {errors.cardNumber && (
-                      <p className="text-xs text-red-500 mt-1">{errors.cardNumber}</p>
-                    )}
-                  </div>
-
-                  <div className="grid grid-cols-2 gap-4">
-                    <div>
-                      <label className="block text-sm font-medium text-[var(--ds-text-primary)] mb-1.5">
-                        Expiry (MM/YY) <span className="text-red-500">*</span>
-                      </label>
-                      <input
-                        type="text"
-                        className={inputCls}
-                        placeholder="12/27"
-                        value={expiry}
-                        onChange={(e) => {
-                          setExpiry(formatExpiry(e.target.value));
-                          setErrors((p) => ({ ...p, expiry: undefined }));
-                        }}
-                        inputMode="numeric"
-                      />
-                      {errors.expiry && (
-                        <p className="text-xs text-red-500 mt-1">{errors.expiry}</p>
-                      )}
-                    </div>
-                    <div>
-                      <label className="block text-sm font-medium text-[var(--ds-text-primary)] mb-1.5">
-                        CVV <span className="text-red-500">*</span>
-                      </label>
-                      <input
-                        type="text"
-                        className={inputCls}
-                        placeholder="123"
-                        value={cvv}
-                        onChange={(e) => {
-                          setCvv(e.target.value.replace(/\D/g, "").slice(0, 4));
-                          setErrors((p) => ({ ...p, cvv: undefined }));
-                        }}
-                        inputMode="numeric"
-                      />
-                      {errors.cvv && (
-                        <p className="text-xs text-red-500 mt-1">{errors.cvv}</p>
-                      )}
-                    </div>
-                  </div>
-                </div>
-              </section>
-
-              {/* Agreement */}
-              <div className="bg-white rounded-2xl border border-[var(--ds-border)] p-6">
-                <label className="flex items-start gap-3 cursor-pointer mb-1">
-                  <input
-                    type="checkbox"
-                    className="mt-0.5 accent-[var(--ds-accent)] w-4 h-4"
-                    checked={agreed}
-                    onChange={(e) => {
-                      setAgreed(e.target.checked);
-                      setErrors((p) => ({ ...p, agreed: undefined }));
-                    }}
-                  />
-                  <span className="text-sm text-[var(--ds-text-secondary)] leading-relaxed">
-                    I understand that the €1,000 submission fee will be charged immediately. I
-                    accept the refund policy: 80% refunded if the project fails screening, 20%
-                    retained as an administration fee. I confirm that I will attend the scheduled
-                    phone verification call.
-                  </span>
-                </label>
-                {errors.agreed && (
-                  <p className="text-xs text-red-500 mt-1 ml-7">{errors.agreed}</p>
-                )}
-              </div>
-
               <button
                 type="submit"
                 disabled={processing}
                 className="w-full py-3.5 rounded-xl bg-[var(--ds-accent)] text-[var(--ds-text-on-dark)] font-semibold text-sm hover:bg-[var(--ds-accent-hover)] transition disabled:opacity-70 flex items-center justify-center gap-2"
               >
-                {processing ? (
-                  "Processing payment…"
-                ) : (
-                  <>
-                    <Shield className="w-4 h-4" />
-                    Pay €1,000 & Submit Project
-                  </>
-                )}
+                {processing ? "Submitting…" : "Submit Project"}
               </button>
             </form>
           </div>

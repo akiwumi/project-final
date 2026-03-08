@@ -4,7 +4,7 @@ import { supabase } from "../../lib/supabase";
 import { Navbar } from "../../components/layout/Navbar";
 import { Footer } from "../../components/layout/Footer";
 import { EntrepreneurSidebar } from "../../components/entrepreneur/Sidebar";
-import { Upload, FileText, X, ChevronDown, AlertCircle } from "lucide-react";
+import { Upload, FileText, X, ChevronDown } from "lucide-react";
 
 export const BUSINESS_CATEGORIES = [
   { value: "agritech", label: "Agriculture & AgriTech" },
@@ -221,7 +221,7 @@ export function SubmitProject() {
         summary: form.summary,
         pitch_url: pitchPath,
         business_plan_url: bpPath,
-        status: "pending_payment",
+        status: "pending_verification",
       })
       .select()
       .single();
@@ -252,18 +252,8 @@ export function SubmitProject() {
                 Submit a Project
               </h1>
               <p className="text-sm text-[var(--ds-text-secondary)]">
-                Fill in all required fields. You'll be taken to payment after submission.
-                The submission fee is <strong>€1,000</strong>.
+                Fill in all required fields. You'll schedule a verification call after submission.
               </p>
-            </div>
-
-            {/* Notice banner */}
-            <div className="mb-6 flex items-start gap-3 p-4 rounded-xl bg-amber-50 border border-amber-200 text-sm text-amber-800">
-              <AlertCircle className="w-4 h-4 shrink-0 mt-0.5" />
-              <span>
-                All submissions are subject to a €1,000 fee. 80% is refunded if your project
-                fails screening. 20% is non-refundable for administration.
-              </span>
             </div>
 
             {Object.keys(errors).length > 0 && (
@@ -400,11 +390,8 @@ export function SubmitProject() {
                   type="submit"
                   className="w-full py-3.5 rounded-xl bg-[var(--ds-accent)] text-[var(--ds-text-on-dark)] font-semibold text-sm hover:bg-[var(--ds-accent-hover)] transition"
                 >
-                  Continue to Payment →
+                  Continue to Verification →
                 </button>
-                <p className="text-center text-xs text-[var(--ds-text-muted)] mt-3">
-                  You will not be charged until the next step.
-                </p>
               </div>
             </form>
           </div>

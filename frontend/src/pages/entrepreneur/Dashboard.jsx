@@ -100,8 +100,8 @@ const STATUS_CONFIG = {
     color: "bg-red-100 text-red-700",
     icon: XCircle,
   },
-  pending_payment: {
-    label: "Pending Payment",
+  pending_verification: {
+    label: "Pending Verification",
     color: "bg-blue-100 text-blue-700",
     icon: AlertCircle,
   },
