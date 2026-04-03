@@ -4,7 +4,17 @@ function normalizePath(path) {
   const trimmed = typeof path === "string" ? path.trim() : "";
   if (!trimmed) return "/ops-private-47x";
 
-  const withLeadingSlash = trimmed.startsWith("/") ? trimmed : `/${trimmed}`;
+  // Allow either "/secret-path" or full URL "https://example.com/secret-path".
+  let rawPath = trimmed;
+  if (/^https?:\/\//i.test(trimmed)) {
+    try {
+      rawPath = new URL(trimmed).pathname || "";
+    } catch {
+      rawPath = trimmed;
+    }
+  }
+
+  const withLeadingSlash = rawPath.startsWith("/") ? rawPath : `/${rawPath}`;
   const withoutTrailingSlash = withLeadingSlash.replace(/\/+$/, "");
   return withoutTrailingSlash || "/ops-private-47x";
 }

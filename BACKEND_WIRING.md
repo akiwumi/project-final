@@ -911,14 +911,19 @@ The project now includes a dedicated admin subsystem:
 
 ```env
 ADMIN_INVITE_CODE=<long-random-secret-string>
+FRONTEND_URL=https://your-frontend.com,http://localhost:5173
 ```
 
 `frontend/.env`
 
 ```env
-VITE_API_URL=http://localhost:8080
+VITE_API_URL=https://your-backend.com   # use http://localhost:8080 only in local dev
 VITE_ADMIN_BASE_PATH=/ops-private-47x   # change to your own secret path
 ```
+
+Notes:
+- `VITE_ADMIN_BASE_PATH` should be a path (not a full URL).
+- If `FRONTEND_URL` includes multiple origins, separate with commas.
 
 ### 17b. Supabase admin schema setup
 

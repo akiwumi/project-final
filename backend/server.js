@@ -51,11 +51,49 @@ const PROJECT_UPDATE_FIELDS = [
   "interests",
 ];
 
+function parseAllowedOrigins(rawValue) {
+  if (!rawValue || rawValue === "*") return "*";
+
+  const list = rawValue
+    .split(",")
+    .map((value) => value.trim())
+    .filter(Boolean);
+
+  return new Set(list);
+}
+
+const defaultLocalOrigins = new Set([
+  "http://localhost:5173",
+  "http://127.0.0.1:5173",
+  "http://localhost:4173",
+  "http://127.0.0.1:4173",
+]);
+
+const configuredOrigins = parseAllowedOrigins(process.env.FRONTEND_URL || "");
+const allowAllOrigins = configuredOrigins === "*";
+const allowedOrigins = allowAllOrigins
+  ? null
+  : new Set([...(configuredOrigins || []), ...defaultLocalOrigins]);
+
+const corsOptions = {
+  origin(origin, callback) {
+    // Non-browser clients (curl, server-to-server) can proceed without Origin header.
+    if (!origin) return callback(null, true);
+
+    if (allowAllOrigins) return callback(null, true);
+
+    if (allowedOrigins?.has(origin)) return callback(null, true);
+
+    return callback(null, false);
+  },
+  methods: ["GET", "POST", "PATCH", "PUT", "DELETE", "OPTIONS"],
+  allowedHeaders: ["Content-Type", "Authorization"],
+};
+
 app.use(
-  cors({
-    origin: process.env.FRONTEND_URL || "*",
-  })
+  cors(corsOptions)
 );
+app.options("*", cors(corsOptions));
 app.use(express.json());
 
 function isUuid(value) {
