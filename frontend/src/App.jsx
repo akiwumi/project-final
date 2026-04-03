@@ -1,5 +1,6 @@
 import { Suspense, lazy } from "react";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
+import { ADMIN_BASE_PATH, ADMIN_LOGIN_PATH, ADMIN_REGISTER_PATH } from "./lib/adminApi";
 
 const LandingPage = lazy(() =>
   import("./pages/LandingPage").then((module) => ({ default: module.LandingPage }))
@@ -66,6 +67,15 @@ const TermsPage = lazy(() =>
 const PrivacyPage = lazy(() =>
   import("./pages/Privacy").then((module) => ({ default: module.PrivacyPage }))
 );
+const AdminLogin = lazy(() =>
+  import("./pages/admin/Login").then((module) => ({ default: module.AdminLogin }))
+);
+const AdminRegister = lazy(() =>
+  import("./pages/admin/Register").then((module) => ({ default: module.AdminRegister }))
+);
+const AdminPanel = lazy(() =>
+  import("./pages/admin/Panel").then((module) => ({ default: module.AdminPanel }))
+);
 
 function RouteFallback() {
   return (
@@ -104,6 +114,11 @@ export function App() {
           <Route path="/entrepreneur/submit" element={<SubmitProject />} />
           <Route path="/entrepreneur/payment" element={<Payment />} />
           <Route path="/entrepreneur/dashboard" element={<EntrepreneurDashboard />} />
+
+          {/* Hidden admin routes (not linked in public navigation) */}
+          <Route path={ADMIN_LOGIN_PATH} element={<AdminLogin />} />
+          <Route path={ADMIN_REGISTER_PATH} element={<AdminRegister />} />
+          <Route path={ADMIN_BASE_PATH} element={<AdminPanel />} />
         </Routes>
       </Suspense>
     </BrowserRouter>

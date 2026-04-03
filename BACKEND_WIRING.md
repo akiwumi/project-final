@@ -246,10 +246,9 @@ Dashboard → **Authentication → Providers → Email**:
 Dashboard → **Authentication → Email Templates → Confirm signup**:
 
 ```html
-<h2>Confirm your Connect Africa account</h2>
-<p>Click the button below to confirm your email address and activate your account.</p>
-<a href="{{ .ConfirmationURL }}">Confirm Email</a>
-<p>This link expires in 24 hours.</p>
+<!-- Copy from: backend/email-templates/welcome-confirmation-supabase.html -->
+<!-- Required Supabase variables used in the template: -->
+<!-- {{ .ConfirmationURL }}, {{ .Email }}, {{ .SiteURL }} -->
 ```
 
 The `ConfirmationURL` automatically redirects to your **Redirect URL** after clicking, which should be `/welcome`.
@@ -895,3 +894,70 @@ app.get("/api/projects/:id/download/:type", async (req, res) => {
 - [ ] `VITE_API_URL` in frontend `.env` points to production backend URL
 - [ ] `frontend/src/lib/supabase.js` created (see Step 6)
 - [ ] `vercel.json` already has SPA rewrite rule ✅
+
+---
+
+## 17. Admin Console (Hidden URL + CRM)
+
+The project now includes a dedicated admin subsystem:
+
+- Hidden frontend routes under a separate base path (default: `/ops-private-47x`)
+- Admin registration endpoint secured by invite code
+- Full admin CRM operations for users, projects/posts, messages, and table-level control
+
+### 17a. Required environment variables
+
+`backend/.env`
+
+```env
+ADMIN_INVITE_CODE=<long-random-secret-string>
+```
+
+`frontend/.env`
+
+```env
+VITE_API_URL=http://localhost:8080
+VITE_ADMIN_BASE_PATH=/ops-private-47x   # change to your own secret path
+```
+
+### 17b. Supabase admin schema setup
+
+Run this file in Supabase SQL Editor:
+
+`backend/sql/admin_setup.sql`
+
+It creates:
+
+- `public.admin_users`
+- `public.admin_schema_tables` view
+- `public.admin_schema_columns` view
+
+### 17c. Admin registration and login flow
+
+1. Open the hidden URL:
+   - Login: `<your-frontend>/ops-private-47x/login`
+   - Register: `<your-frontend>/ops-private-47x/register`
+2. Register first admin with email/password + `ADMIN_INVITE_CODE`
+3. Sign in and access the admin panel at `<your-frontend>/ops-private-47x`
+
+### 17d. Admin API routes
+
+New backend routes include:
+
+- `POST /api/admin/register`
+- `GET /api/admin/me`
+- `GET /api/admin/dashboard`
+- `GET /api/admin/users`
+- `GET /api/admin/users/:id`
+- `POST /api/admin/users/:id/contact`
+- `DELETE /api/admin/users/:id`
+- `GET /api/admin/projects`
+- `POST /api/admin/projects`
+- `PATCH /api/admin/projects/:id`
+- `DELETE /api/admin/projects/:id`
+- `GET /api/admin/messages`
+- `GET /api/admin/tables`
+- `GET /api/admin/tables/:table/rows`
+- `POST /api/admin/tables/:table/rows`
+- `PATCH /api/admin/tables/:table/rows/:id`
+- `DELETE /api/admin/tables/:table/rows/:id`
