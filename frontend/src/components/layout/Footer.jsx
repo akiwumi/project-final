@@ -1,17 +1,19 @@
 import { MapPin, Mail } from "lucide-react";
+import { Link } from "react-router-dom";
 
 const footerLinks = {
   product: [
-    { label: "How it works", href: "#how-it-works" },
-    { label: "For Investors", href: "#how-it-works" },
-    { label: "For Entrepreneurs", href: "#how-it-works" },
-    { label: "For Providers", href: "#how-it-works" },
+    { label: "How it works", to: "/how-it-works" },
+    { label: "For Investors", to: "/investor" },
+    { label: "For Entrepreneurs", to: "/register" },
+    { label: "For Providers", to: "/register?role=provider" },
   ],
   resources: [
-    { label: "Advice", href: "#advice" },
-    { label: "Rules", href: "#rules" },
-    { label: "Terms", href: "#terms" },
-    { label: "About", href: "#about" },
+    { label: "Advice", to: "/advice" },
+    { label: "Rules", to: "/terms" },
+    { label: "Terms", to: "/terms" },
+    { label: "Privacy", to: "/privacy" },
+    { label: "About", to: "/why-us" },
   ],
 };
 
@@ -36,12 +38,12 @@ export function Footer() {
             <ul className="space-y-2.5">
               {footerLinks.product.map((link) => (
                 <li key={link.label}>
-                  <a
-                    href={link.href}
+                  <Link
+                    to={link.to}
                     className="text-sm text-[var(--ds-text-on-dark)]/65 hover:text-[var(--ds-accent)] transition"
                   >
                     {link.label}
-                  </a>
+                  </Link>
                 </li>
               ))}
             </ul>
@@ -51,12 +53,12 @@ export function Footer() {
             <ul className="space-y-2.5">
               {footerLinks.resources.map((link) => (
                 <li key={link.label}>
-                  <a
-                    href={link.href}
+                  <Link
+                    to={link.to}
                     className="text-sm text-[var(--ds-text-on-dark)]/65 hover:text-[var(--ds-accent)] transition"
                   >
                     {link.label}
-                  </a>
+                  </Link>
                 </li>
               ))}
             </ul>
@@ -70,10 +72,10 @@ export function Footer() {
             <p className="text-sm flex items-center gap-2 mt-2 text-[var(--ds-text-on-dark)]/65">
               <Mail className="w-4 h-4 shrink-0" />
               <a
-                href="mailto:hello@connectafrica.example"
+                href="mailto:support@connectafrica.com"
                 className="hover:text-[var(--ds-accent)] transition"
               >
-                hello@connectafrica.example
+                support@connectafrica.com
               </a>
             </p>
           </div>

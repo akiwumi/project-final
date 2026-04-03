@@ -1,6 +1,7 @@
 import { useState, useRef, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { supabase } from "../../lib/supabase";
+import { useAuth } from "../../context/AuthContext";
 import { Navbar } from "../../components/layout/Navbar";
 import { Footer } from "../../components/layout/Footer";
 import { EntrepreneurSidebar } from "../../components/entrepreneur/Sidebar";
@@ -70,6 +71,7 @@ function StatCard({ label, value, sub, icon: Icon, accent }) {
 
 export function EntrepreneurDashboard() {
   const navigate = useNavigate();
+  const { user, profile, displayName, isLoading: isAuthLoading } = useAuth();
   const chatEndRef = useRef(null);
   const [messages, setMessages] = useState([]);
   const [newMsg, setNewMsg] = useState("");
@@ -80,9 +82,15 @@ export function EntrepreneurDashboard() {
   const activeCount = submissions.filter((s) => s.status !== "failed_screening").length;
 
   useEffect(() => {
-    async function loadData() {
-      const { data: { user } } = await supabase.auth.getUser();
+    if (!isAuthLoading && !user) {
+      navigate("/login");
+    }
+  }, [isAuthLoading, navigate, user]);
 
+  useEffect(() => {
+    if (!user?.id) return;
+
+    async function loadData() {
       const { data: subs } = await supabase
         .from("projects")
         .select("*")
@@ -92,12 +100,12 @@ export function EntrepreneurDashboard() {
       if (subs) setSubmissions(subs);
     }
     loadData();
-  }, []);
+  }, [user?.id]);
 
   useEffect(() => {
-    async function loadMessages() {
-      const { data: { user } } = await supabase.auth.getUser();
+    if (!user?.id) return;
 
+    async function loadMessages() {
       const { data } = await supabase
         .from("messages")
         .select("*")
@@ -126,24 +134,36 @@ export function EntrepreneurDashboard() {
     }
 
     loadMessages();
-  }, []);
+  }, [user?.id]);
 
   useEffect(() => {
     chatEndRef.current?.scrollIntoView({ behavior: "smooth" });
   }, [messages]);
 
   async function sendMessage() {
-    if (!newMsg.trim()) return;
-    const { data: { user } } = await supabase.auth.getUser();
+    if (!newMsg.trim() || !user?.id) return;
 
     await supabase.from("messages").insert({
       entrepreneur_id: user.id,
       sender: "user",
-      sender_name: "Jane Doe",
+      sender_name: displayName || user.email || "User",
       text: newMsg.trim(),
     });
 
     setNewMsg("");
+  }
+
+  if (isAuthLoading) {
+    return (
+      <div className="min-h-screen bg-[var(--ds-bg-light)]">
+        <Navbar />
+        <div className="pt-24 px-6 text-sm text-[var(--ds-text-secondary)]">Loading your dashboard...</div>
+      </div>
+    );
+  }
+
+  if (!user) {
+    return null;
   }
 
   return (
@@ -163,7 +183,7 @@ export function EntrepreneurDashboard() {
                 Dashboard
               </h1>
               <p className="text-sm text-[var(--ds-text-secondary)]">
-                Welcome back, Jane. Here's how your submissions are performing.
+                Welcome back, {profile?.first_name || displayName || "there"}. Here's how your submissions are performing.
               </p>
             </div>
             <button
@@ -277,7 +297,7 @@ export function EntrepreneurDashboard() {
                         >
                           {!isUser && (
                             <p className="text-xs font-semibold text-[var(--ds-accent)] mb-1">
-                              {msg.name}
+                              {msg.sender_name || msg.name || "Connect Africa Team"}
                             </p>
                           )}
                           {msg.text}

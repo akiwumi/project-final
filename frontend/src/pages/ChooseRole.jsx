@@ -1,6 +1,7 @@
 import { Navbar } from "../components/layout/Navbar";
 import { Footer } from "../components/layout/Footer";
 import { Rocket, Users, Briefcase } from "lucide-react";
+import { Link } from "react-router-dom";
 
 const categories = [
   {
@@ -72,12 +73,12 @@ export function ChooseRole() {
                 <p className="text-[var(--ds-text-secondary)] leading-[var(--ds-line-relaxed)] flex-1 mb-6">
                   {cat.description}
                 </p>
-                <a
-                  href={cat.ctaHref}
+                <Link
+                  to={cat.ctaHref}
                   className={`inline-block text-center font-semibold px-6 py-3 rounded-xl transition ${cat.accent}`}
                 >
                   {cat.ctaLabel}
-                </a>
+                </Link>
               </article>
             ))}
           </div>

@@ -1,4 +1,5 @@
 import { motion } from "framer-motion";
+import { Link } from "react-router-dom";
 import { Navbar } from "../components/layout/Navbar";
 import { Footer } from "../components/layout/Footer";
 import {
@@ -14,20 +15,20 @@ import {
   CheckCircle,
 } from "lucide-react";
 
-function CTAButton({ href, children, variant = "gold" }) {
+function CTAButton({ to, children, variant = "gold" }) {
   const styles = {
     gold: "bg-[var(--ds-accent)] text-[var(--ds-text-on-dark)] hover:bg-[var(--ds-accent-hover)]",
     outline:
       "border-2 border-[var(--ds-text-on-dark)] text-[var(--ds-text-on-dark)] hover:bg-[var(--ds-text-on-dark)] hover:text-[var(--ds-bg-dark)]",
   };
   return (
-    <a
-      href={href}
+    <Link
+      to={to}
       className={`inline-flex items-center gap-2 px-8 py-3.5 rounded-full font-semibold text-sm transition shadow-md ${styles[variant]}`}
     >
       {children}
       <ArrowRight className="w-4 h-4" />
-    </a>
+    </Link>
   );
 }
 
@@ -173,8 +174,8 @@ export function WhyUsPage() {
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.3 }}
             >
-              <CTAButton href="/choose-role">Join the platform</CTAButton>
-              <CTAButton href="/how-it-works" variant="outline">See how it works</CTAButton>
+              <CTAButton to="/choose-role">Join the platform</CTAButton>
+              <CTAButton to="/how-it-works" variant="outline">See how it works</CTAButton>
             </motion.div>
           </div>
         </section>
@@ -404,8 +405,8 @@ export function WhyUsPage() {
               with confidence.
             </p>
             <div className="flex flex-wrap gap-4 justify-center">
-              <CTAButton href="/choose-role">Create your account</CTAButton>
-              <CTAButton href="/testimonials" variant="outline">Read success stories</CTAButton>
+              <CTAButton to="/choose-role">Create your account</CTAButton>
+              <CTAButton to="/testimonials" variant="outline">Read success stories</CTAButton>
             </div>
           </div>
         </section>

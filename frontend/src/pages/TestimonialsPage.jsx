@@ -1,10 +1,11 @@
 import { useState } from "react";
 import { motion } from "framer-motion";
+import { Link } from "react-router-dom";
 import { Navbar } from "../components/layout/Navbar";
 import { Footer } from "../components/layout/Footer";
 import { Quote, Star, ArrowRight, Play } from "lucide-react";
 
-function CTAButton({ href, children, variant = "gold" }) {
+function CTAButton({ to, children, variant = "gold" }) {
   const styles = {
     gold: "bg-[var(--ds-accent)] text-[var(--ds-text-on-dark)] hover:bg-[var(--ds-accent-hover)]",
     outline:
@@ -13,13 +14,13 @@ function CTAButton({ href, children, variant = "gold" }) {
       "border-2 border-[var(--ds-border)] text-[var(--ds-text-primary)] hover:border-[var(--ds-accent)] hover:text-[var(--ds-accent)]",
   };
   return (
-    <a
-      href={href}
+    <Link
+      to={to}
       className={`inline-flex items-center gap-2 px-8 py-3.5 rounded-full font-semibold text-sm transition shadow-md ${styles[variant]}`}
     >
       {children}
       <ArrowRight className="w-4 h-4" />
-    </a>
+    </Link>
   );
 }
 
@@ -210,7 +211,7 @@ export function TestimonialsPage() {
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.3 }}
             >
-              <CTAButton href="/choose-role">Join them today</CTAButton>
+              <CTAButton to="/choose-role">Join them today</CTAButton>
             </motion.div>
           </div>
         </section>
@@ -373,7 +374,7 @@ export function TestimonialsPage() {
                         <p className="text-sm font-bold text-[var(--ds-text-primary)]">{cs.timeline}</p>
                       </div>
                     </div>
-                    <CTAButton href="/how-it-works" variant="dark">See how they did it</CTAButton>
+                    <CTAButton to="/how-it-works" variant="dark">See how they did it</CTAButton>
                   </div>
                   <div className="flex-1 w-full">
                     <ImgPlaceholder label={cs.imgLabel} aspect="aspect-[4/3]" />
@@ -401,8 +402,8 @@ export function TestimonialsPage() {
               building the next chapter of African investment.
             </p>
             <div className="flex flex-wrap gap-4 justify-center">
-              <CTAButton href="/choose-role">Create your account</CTAButton>
-              <CTAButton href="/why-us" variant="outline">Why Connect Africa</CTAButton>
+              <CTAButton to="/choose-role">Create your account</CTAButton>
+              <CTAButton to="/why-us" variant="outline">Why Connect Africa</CTAButton>
             </div>
           </div>
         </section>

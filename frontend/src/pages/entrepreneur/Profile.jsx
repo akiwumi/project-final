@@ -1,6 +1,7 @@
 import { useState, useRef, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { supabase } from "../../lib/supabase";
+import { useAuth } from "../../context/AuthContext";
 import { Navbar } from "../../components/layout/Navbar";
 import { Footer } from "../../components/layout/Footer";
 import { EntrepreneurSidebar } from "../../components/entrepreneur/Sidebar";
@@ -19,6 +20,7 @@ const inputCls =
 
 export function EntrepreneurProfile() {
   const navigate = useNavigate();
+  const { user, isLoading: isAuthLoading, refreshProfile } = useAuth();
   const fileInputRef = useRef(null);
 
   const [avatar, setAvatar] = useState(null);
@@ -31,11 +33,11 @@ export function EntrepreneurProfile() {
   const [profile, setProfile] = useState(null);
 
   useEffect(() => {
+    if (isAuthLoading) return;
+
     async function loadProfile() {
-      const { data: { session } } = await supabase.auth.getSession();
-      const user = session?.user;
       if (!user) {
-        console.warn("Profile: no authenticated session found");
+        navigate("/login");
         return;
       }
       const { data, error } = await supabase
@@ -56,7 +58,7 @@ export function EntrepreneurProfile() {
       }
     }
     loadProfile();
-  }, []);
+  }, [isAuthLoading, navigate, user]);
 
   function handleAvatarChange(e) {
     const file = e.target.files[0];
@@ -71,8 +73,6 @@ export function EntrepreneurProfile() {
     setSaved(false);
     setSaveError("");
 
-    const { data: { session } } = await supabase.auth.getSession();
-    const user = session?.user;
     if (!user) { setSaving(false); setSaveError("Not authenticated."); return; }
     let avatarUrl = profile?.avatar_url || null;
 
@@ -105,12 +105,22 @@ export function EntrepreneurProfile() {
       setSaveError(`Save failed: ${updateError.message}`);
     } else {
       setSaved(true);
+      await refreshProfile();
     }
   }
 
   const firstName = profile?.first_name || "";
   const lastName = profile?.last_name || "";
   const initials = firstName && lastName ? `${firstName[0]}${lastName[0]}` : "?";
+
+  if (isAuthLoading) {
+    return (
+      <div className="min-h-screen bg-[var(--ds-bg-light)]">
+        <Navbar />
+        <div className="pt-24 px-6 text-sm text-[var(--ds-text-secondary)]">Loading your profile...</div>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-[var(--ds-bg-light)]">

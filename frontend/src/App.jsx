@@ -60,6 +60,12 @@ const TestimonialsPage = lazy(() =>
 const AdvicePage = lazy(() =>
   import("./pages/Advice").then((module) => ({ default: module.AdvicePage }))
 );
+const TermsPage = lazy(() =>
+  import("./pages/Terms").then((module) => ({ default: module.TermsPage }))
+);
+const PrivacyPage = lazy(() =>
+  import("./pages/Privacy").then((module) => ({ default: module.PrivacyPage }))
+);
 
 function RouteFallback() {
   return (
@@ -85,6 +91,8 @@ export function App() {
           <Route path="/why-us" element={<WhyUsPage />} />
           <Route path="/testimonials" element={<TestimonialsPage />} />
           <Route path="/advice" element={<AdvicePage />} />
+          <Route path="/terms" element={<TermsPage />} />
+          <Route path="/privacy" element={<PrivacyPage />} />
 
           {/* Entrepreneur registration flow */}
           <Route path="/register" element={<EntrepreneurRegister />} />

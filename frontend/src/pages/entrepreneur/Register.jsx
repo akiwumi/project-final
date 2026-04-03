@@ -492,13 +492,13 @@ export function EntrepreneurRegister() {
                 />
                 <span className="text-sm text-[var(--ds-text-secondary)] leading-relaxed">
                   I agree to the{" "}
-                  <a href="/terms" className="text-[var(--ds-accent)] underline hover:text-[var(--ds-accent-hover)]">
+                  <Link to="/terms" className="text-[var(--ds-accent)] underline hover:text-[var(--ds-accent-hover)]">
                     Terms of Service
-                  </a>{" "}
+                  </Link>{" "}
                   and{" "}
-                  <a href="/privacy" className="text-[var(--ds-accent)] underline hover:text-[var(--ds-accent-hover)]">
+                  <Link to="/privacy" className="text-[var(--ds-accent)] underline hover:text-[var(--ds-accent-hover)]">
                     Privacy Policy
-                  </a>
+                  </Link>
                   . I understand a confirmation email will be sent before my account is activated.
                 </span>
               </label>

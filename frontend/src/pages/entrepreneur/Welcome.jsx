@@ -3,6 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { Navbar } from "../../components/layout/Navbar";
 import { CheckCircle, ChevronDown, ChevronUp, Shield } from "lucide-react";
 import { supabase } from "../../lib/supabase";
+import { useAuth } from "../../context/AuthContext";
 
 const TC_SECTIONS = [
   {
@@ -80,13 +81,15 @@ function AccordionItem({ section, open, onToggle }) {
 
 export function Welcome() {
   const navigate = useNavigate();
+  const { user, isLoading: isAuthLoading } = useAuth();
   const [openSection, setOpenSection] = useState(null);
   const [accepted, setAccepted] = useState(false);
 
   useEffect(() => {
+    if (isAuthLoading) return;
+
     async function init() {
-      const { data: { session } } = await supabase.auth.getSession();
-      if (!session) {
+      if (!user) {
         navigate("/register");
         return;
       }
@@ -97,7 +100,7 @@ export function Welcome() {
       const { data: existing } = await supabase
         .from("entrepreneurs")
         .select("id")
-        .eq("id", session.user.id)
+        .eq("id", user.id)
         .maybeSingle();
 
       if (!existing) {
@@ -105,7 +108,7 @@ export function Welcome() {
         if (pendingStr) {
           try {
             const pendingData = JSON.parse(pendingStr);
-            if (pendingData.id === session.user.id) {
+            if (pendingData.id === user.id) {
               await supabase.from("entrepreneurs").insert(pendingData);
               localStorage.removeItem("pendingEntrepreneur");
             }
@@ -116,16 +119,14 @@ export function Welcome() {
       }
     }
     init();
-  }, []);
+  }, [isAuthLoading, navigate, user]);
 
   function toggle(id) {
     setOpenSection((prev) => (prev === id ? null : id));
   }
 
   async function handleAccept() {
-    if (!accepted) return;
-
-    const { data: { user } } = await supabase.auth.getUser();
+    if (!accepted || !user) return;
 
     const { error } = await supabase
       .from("entrepreneurs")

@@ -1,4 +1,5 @@
 import { motion } from "framer-motion";
+import { Link } from "react-router-dom";
 import { Navbar } from "../components/layout/Navbar";
 import { Footer } from "../components/layout/Footer";
 import {
@@ -24,15 +25,15 @@ function SectionLabel({ children }) {
   );
 }
 
-function CTAButton({ href, children }) {
+function CTAButton({ to, children }) {
   return (
-    <a
-      href={href}
+    <Link
+      to={to}
       className="inline-flex items-center gap-2 px-8 py-3.5 rounded-full font-semibold text-sm bg-[var(--ds-accent)] text-[var(--ds-text-on-dark)] hover:bg-[var(--ds-accent-hover)] transition shadow-md"
     >
       {children}
       <ArrowRight className="w-4 h-4" />
-    </a>
+    </Link>
   );
 }
 
@@ -204,7 +205,7 @@ export function HowItWorksPage() {
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.5, delay: 0.3 }}
             >
-              <CTAButton href="/choose-role">Get started today</CTAButton>
+              <CTAButton to="/choose-role">Get started today</CTAButton>
             </motion.div>
           </div>
         </section>
@@ -281,7 +282,7 @@ export function HowItWorksPage() {
                   </ol>
 
                   <div className="mt-8">
-                    <CTAButton href={role.cta.href}>{role.cta.label}</CTAButton>
+                    <CTAButton to={role.cta.href}>{role.cta.label}</CTAButton>
                   </div>
                 </motion.div>
 
@@ -317,7 +318,7 @@ export function HowItWorksPage() {
               Join hundreds of entrepreneurs, investors, and service providers already using
               Connect Africa to build meaningful cross-border relationships.
             </p>
-            <CTAButton href="/choose-role">Choose your role</CTAButton>
+            <CTAButton to="/choose-role">Choose your role</CTAButton>
           </div>
         </section>
 

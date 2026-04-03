@@ -1,5 +1,6 @@
 import { motion } from "framer-motion";
 import { Users, Rocket, Briefcase } from "lucide-react";
+import { Link } from "react-router-dom";
 
 const columns = [
   {
@@ -108,12 +109,12 @@ export function HowItWorks() {
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
         >
-          <a
-            href="/choose-role"
+          <Link
+            to="/choose-role"
             className="inline-flex items-center px-8 py-3.5 rounded-full font-medium bg-[var(--ds-accent)] text-[var(--ds-text-primary)] hover:bg-[var(--ds-accent-hover)] transition shadow-md"
           >
             Get Started
-          </a>
+          </Link>
         </motion.div>
       </div>
     </section>
