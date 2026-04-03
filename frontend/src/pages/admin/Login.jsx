@@ -12,11 +12,18 @@ import {
 const inputCls =
   "w-full px-4 py-2.5 rounded-xl border border-[var(--ds-border)] bg-white text-[var(--ds-text-primary)] placeholder:text-[var(--ds-text-muted)] focus:outline-none focus:ring-2 focus:ring-[var(--ds-accent)] focus:border-transparent text-sm";
 
+function normalizeAdminIdentifier(value) {
+  const trimmed = (value || "").trim().toLowerCase();
+  if (!trimmed) return "";
+  if (trimmed.includes("@")) return trimmed;
+  return `${trimmed}@admin.local`;
+}
+
 export function AdminLogin() {
   const navigate = useNavigate();
   const { user, isLoading: isAuthLoading } = useAuth();
 
-  const [email, setEmail] = useState("");
+  const [emailOrLogin, setEmailOrLogin] = useState("");
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
   const [error, setError] = useState("");
@@ -59,8 +66,15 @@ export function AdminLogin() {
     setError("");
     setLoading(true);
 
+    const normalizedEmail = normalizeAdminIdentifier(emailOrLogin);
+    if (!normalizedEmail) {
+      setLoading(false);
+      setError("Login is required.");
+      return;
+    }
+
     const { error: authError } = await supabase.auth.signInWithPassword({
-      email: email.trim(),
+      email: normalizedEmail,
       password,
     });
 
@@ -107,13 +121,15 @@ export function AdminLogin() {
 
         <form onSubmit={handleSubmit} className="space-y-4" noValidate>
           <div className="flex flex-col gap-1.5">
-            <label className="text-sm font-medium text-[var(--ds-text-primary)]">Email</label>
+            <label className="text-sm font-medium text-[var(--ds-text-primary)]">
+              Login or Email
+            </label>
             <input
-              type="email"
+              type="text"
               className={inputCls}
-              placeholder="admin@company.com"
-              value={email}
-              onChange={(event) => setEmail(event.target.value)}
+              placeholder="sokina"
+              value={emailOrLogin}
+              onChange={(event) => setEmailOrLogin(event.target.value)}
               required
             />
           </div>

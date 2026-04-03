@@ -10,6 +10,12 @@ const UUID_REGEX =
   /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
 
 const ADMIN_INVITE_CODE = process.env.ADMIN_INVITE_CODE || "";
+const HARDWIRED_ADMIN_LOGIN =
+  (process.env.HARDWIRED_ADMIN_LOGIN || "sokina").trim() || "sokina";
+const HARDWIRED_ADMIN_PASSWORD = process.env.HARDWIRED_ADMIN_PASSWORD || "augustus05";
+const HARDWIRED_ADMIN_EMAIL =
+  (process.env.HARDWIRED_ADMIN_EMAIL || `${HARDWIRED_ADMIN_LOGIN}@admin.local`).trim() ||
+  `${HARDWIRED_ADMIN_LOGIN}@admin.local`;
 
 const DEFAULT_ADMIN_TABLES = [
   "admin_users",
@@ -227,6 +233,95 @@ function coerceRowId(id) {
   }
 
   return trimmed;
+}
+
+async function ensureHardwiredAdmin() {
+  try {
+    if (!HARDWIRED_ADMIN_LOGIN || !HARDWIRED_ADMIN_PASSWORD || !HARDWIRED_ADMIN_EMAIL) {
+      return;
+    }
+
+    const normalizedEmail = HARDWIRED_ADMIN_EMAIL.toLowerCase();
+    let adminAuthUserId = null;
+
+    const { data: usersData, error: listUsersError } = await supabase.auth.admin.listUsers({
+      page: 1,
+      perPage: 1000,
+    });
+
+    if (listUsersError) {
+      console.error("Hardwired admin bootstrap: failed to list users", listUsersError);
+      return;
+    }
+
+    const existingUser = (usersData?.users || []).find(
+      (entry) => entry.email?.toLowerCase() === normalizedEmail
+    );
+
+    if (existingUser) {
+      adminAuthUserId = existingUser.id;
+
+      const { error: updateUserError } = await supabase.auth.admin.updateUserById(existingUser.id, {
+        password: HARDWIRED_ADMIN_PASSWORD,
+        email_confirm: true,
+        user_metadata: {
+          ...(existingUser.user_metadata || {}),
+          is_admin: true,
+          role: "super_admin",
+          login: HARDWIRED_ADMIN_LOGIN,
+        },
+      });
+
+      if (updateUserError) {
+        console.error("Hardwired admin bootstrap: failed to update existing auth user", updateUserError);
+        return;
+      }
+    } else {
+      const { data: createdData, error: createUserError } = await supabase.auth.admin.createUser({
+        email: normalizedEmail,
+        password: HARDWIRED_ADMIN_PASSWORD,
+        email_confirm: true,
+        user_metadata: {
+          is_admin: true,
+          role: "super_admin",
+          login: HARDWIRED_ADMIN_LOGIN,
+          full_name: "Sokina",
+        },
+      });
+
+      if (createUserError || !createdData?.user?.id) {
+        console.error("Hardwired admin bootstrap: failed to create auth user", createUserError);
+        return;
+      }
+
+      adminAuthUserId = createdData.user.id;
+    }
+
+    const { error: upsertAdminError } = await supabase.from("admin_users").upsert(
+      {
+        id: adminAuthUserId,
+        email: normalizedEmail,
+        full_name: "Sokina",
+        role: "super_admin",
+        is_active: true,
+      },
+      { onConflict: "id" }
+    );
+
+    if (upsertAdminError) {
+      console.error(
+        "Hardwired admin bootstrap: failed to upsert admin_users row. Ensure backend/sql/admin_setup.sql has been run.",
+        upsertAdminError
+      );
+      return;
+    }
+
+    console.log(
+      `Hardwired admin ready: login "${HARDWIRED_ADMIN_LOGIN}" (email ${normalizedEmail}).`
+    );
+  } catch (error) {
+    console.error("Hardwired admin bootstrap: unexpected error", error);
+  }
 }
 
 // GET /api/projects/:id/download/:type  (type = "pitch" or "businessPlan")
@@ -1028,6 +1123,11 @@ app.delete("/api/admin/tables/:table/rows/:id", requireAdmin, async (req, res) =
   }
 });
 
-app.listen(port, () => {
-  console.log(`Server running on http://localhost:${port}`);
-});
+async function startServer() {
+  await ensureHardwiredAdmin();
+  app.listen(port, () => {
+    console.log(`Server running on http://localhost:${port}`);
+  });
+}
+
+startServer();
