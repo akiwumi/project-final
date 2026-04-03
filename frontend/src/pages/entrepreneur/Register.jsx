@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { Link } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import { Navbar } from "../../components/layout/Navbar";
 import { Footer } from "../../components/layout/Footer";
 import { ChevronDown, Eye, EyeOff, Rocket } from "lucide-react";
@@ -72,10 +73,15 @@ const selectCls =
   "w-full px-4 py-2.5 rounded-xl border border-[var(--ds-border)] bg-white text-[var(--ds-text-primary)] focus:outline-none focus:ring-2 focus:ring-[var(--ds-accent)] focus:border-transparent text-sm appearance-none";
 
 export function EntrepreneurRegister() {
+  const navigate = useNavigate();
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirm, setShowConfirm] = useState(false);
   const [submitted, setSubmitted] = useState(false);
   const [errors, setErrors] = useState({});
+  const [submitError, setSubmitError] = useState("");
+  const [submitting, setSubmitting] = useState(false);
+  const [resending, setResending] = useState(false);
+  const [resendMsg, setResendMsg] = useState("");
 
   const [form, setForm] = useState({
     // Personal
@@ -129,24 +135,42 @@ export function EntrepreneurRegister() {
 
   async function handleSubmit(e) {
     e.preventDefault();
+    setSubmitError("");
+    setResendMsg("");
     const errs = validate();
     if (Object.keys(errs).length > 0) {
       setErrors(errs);
       window.scrollTo({ top: 0, behavior: "smooth" });
       return;
     }
+    setSubmitting(true);
+
+    const emailRedirectTo =
+      import.meta.env.VITE_EMAIL_REDIRECT_TO || `${window.location.origin}/welcome`;
 
     // 1. Create auth user — Supabase sends confirmation email automatically
     const { data: authData, error: authError } = await supabase.auth.signUp({
       email: form.email,
       password: form.password,
       options: {
-        emailRedirectTo: `${window.location.origin}/welcome`,
+        emailRedirectTo,
       },
     });
 
     if (authError) {
+      setSubmitting(false);
       setErrors({ email: authError.message });
+      return;
+    }
+
+    const existingUserNoIdentity =
+      Array.isArray(authData?.user?.identities) && authData.user.identities.length === 0;
+    if (existingUserNoIdentity) {
+      setSubmitting(false);
+      setErrors({
+        email:
+          "This email is already registered. Please sign in instead, or reset your password if needed.",
+      });
       return;
     }
 
@@ -172,9 +196,47 @@ export function EntrepreneurRegister() {
     localStorage.setItem("pendingEntrepreneur", JSON.stringify(entrepreneurData));
 
     // 2. Insert entrepreneur profile row (succeeds immediately when no email confirm)
-    await supabase.from("entrepreneurs").insert(entrepreneurData);
+    const { error: insertError } = await supabase
+      .from("entrepreneurs")
+      .insert(entrepreneurData);
+    if (insertError) {
+      console.warn("Profile insert deferred until confirmed session:", insertError.message);
+    }
+
+    const isEmailAlreadyConfirmed = Boolean(authData?.user?.email_confirmed_at);
+    if (authData?.session || isEmailAlreadyConfirmed) {
+      setSubmitting(false);
+      navigate("/welcome");
+      return;
+    }
 
     setSubmitted(true);
+    setSubmitting(false);
+  }
+
+  async function handleResend() {
+    setResending(true);
+    setResendMsg("");
+
+    const emailRedirectTo =
+      import.meta.env.VITE_EMAIL_REDIRECT_TO || `${window.location.origin}/welcome`;
+
+    const { error } = await supabase.auth.resend({
+      type: "signup",
+      email: form.email,
+      options: {
+        emailRedirectTo,
+      },
+    });
+
+    if (error) {
+      setResendMsg(error.message);
+      setResending(false);
+      return;
+    }
+
+    setResendMsg("Confirmation email re-sent. Please check inbox and spam folders.");
+    setResending(false);
   }
 
   if (submitted) {
@@ -204,6 +266,17 @@ export function EntrepreneurRegister() {
               </button>
               .
             </p>
+            <button
+              type="button"
+              onClick={handleResend}
+              disabled={resending}
+              className="mt-4 text-sm underline text-[var(--ds-accent)] hover:text-[var(--ds-accent-hover)] disabled:opacity-60"
+            >
+              {resending ? "Resending..." : "Resend confirmation email"}
+            </button>
+            {resendMsg && (
+              <p className="mt-3 text-xs text-[var(--ds-text-secondary)]">{resendMsg}</p>
+            )}
           </div>
         </main>
         <Footer />
@@ -240,6 +313,11 @@ export function EntrepreneurRegister() {
           {Object.keys(errors).length > 0 && (
             <div className="mb-6 p-4 rounded-xl bg-red-50 border border-red-200 text-sm text-red-700">
               Please fix the highlighted fields before continuing.
+            </div>
+          )}
+          {submitError && (
+            <div className="mb-6 p-4 rounded-xl bg-red-50 border border-red-200 text-sm text-red-700">
+              {submitError}
             </div>
           )}
 
@@ -510,9 +588,10 @@ export function EntrepreneurRegister() {
             <div className="pt-6">
               <button
                 type="submit"
+                disabled={submitting}
                 className="w-full py-3.5 rounded-xl bg-[var(--ds-accent)] text-[var(--ds-text-on-dark)] font-semibold text-sm hover:bg-[var(--ds-accent-hover)] transition"
               >
-                Create account & send confirmation email
+                {submitting ? "Creating account..." : "Create account & send confirmation email"}
               </button>
               <p className="text-center text-xs text-[var(--ds-text-muted)] mt-3">
                 Already have an account?{" "}
