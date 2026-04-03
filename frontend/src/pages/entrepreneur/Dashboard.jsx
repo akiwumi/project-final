@@ -105,6 +105,9 @@ export function EntrepreneurDashboard() {
   useEffect(() => {
     if (!user?.id) return;
 
+    let isCancelled = false;
+    let channel;
+
     async function loadMessages() {
       const { data } = await supabase
         .from("messages")
@@ -112,10 +115,12 @@ export function EntrepreneurDashboard() {
         .eq("entrepreneur_id", user.id)
         .order("created_at", { ascending: true });
 
+      if (isCancelled) return;
+
       if (data) setMessages(data);
 
-      const channel = supabase
-        .channel("messages")
+      channel = supabase
+        .channel(`messages:${user.id}`)
         .on(
           "postgres_changes",
           {
@@ -129,11 +134,16 @@ export function EntrepreneurDashboard() {
           }
         )
         .subscribe();
-
-      return () => supabase.removeChannel(channel);
     }
 
     loadMessages();
+
+    return () => {
+      isCancelled = true;
+      if (channel) {
+        supabase.removeChannel(channel);
+      }
+    };
   }, [user?.id]);
 
   useEffect(() => {
@@ -318,7 +328,11 @@ export function EntrepreneurDashboard() {
 
               {/* Input */}
               <div className="border-t border-[var(--ds-border)] p-4 flex gap-3">
+                <label htmlFor="dashboard-chat-input" className="sr-only">
+                  Message to Connect Africa team
+                </label>
                 <input
+                  id="dashboard-chat-input"
                   type="text"
                   className="flex-1 px-4 py-2.5 rounded-xl border border-[var(--ds-border)] bg-[var(--ds-bg-light)] text-sm text-[var(--ds-text-primary)] placeholder:text-[var(--ds-text-muted)] focus:outline-none focus:ring-2 focus:ring-[var(--ds-accent)] focus:border-transparent"
                   placeholder="Type a message…"
@@ -331,6 +345,7 @@ export function EntrepreneurDashboard() {
                   onClick={sendMessage}
                   disabled={!newMsg.trim()}
                   className="p-2.5 rounded-xl bg-[var(--ds-accent)] text-white hover:bg-[var(--ds-accent-hover)] disabled:opacity-50 transition"
+                  aria-label="Send message"
                 >
                   <Send className="w-4 h-4" />
                 </button>

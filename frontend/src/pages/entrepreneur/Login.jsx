@@ -17,6 +17,9 @@ export function Login() {
   const [showPassword, setShowPassword] = useState(false);
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
+  const emailInputId = "entrepreneur-login-email";
+  const passwordInputId = "entrepreneur-login-password";
+  const loginErrorId = "entrepreneur-login-error";
 
   useEffect(() => {
     if (!isAuthLoading && user) {
@@ -67,18 +70,25 @@ export function Login() {
 
           <div className="bg-white rounded-2xl border border-[var(--ds-border)] shadow-sm p-8">
             {error && (
-              <div className="mb-5 p-3 rounded-xl bg-red-50 border border-red-200 text-sm text-red-700">
+              <div
+                id={loginErrorId}
+                role="alert"
+                aria-live="assertive"
+                className="mb-5 p-3 rounded-xl bg-red-50 border border-red-200 text-sm text-red-700"
+              >
                 {error}
               </div>
             )}
 
             <form onSubmit={handleSubmit} noValidate className="space-y-4">
               <div className="flex flex-col gap-1.5">
-                <label className="text-sm font-medium text-[var(--ds-text-primary)]">
+                <label htmlFor={emailInputId} className="text-sm font-medium text-[var(--ds-text-primary)]">
                   Email address
                 </label>
                 <input
+                  id={emailInputId}
                   type="email"
+                  autoComplete="email"
                   className={inputCls}
                   placeholder="jane@company.com"
                   value={email}
@@ -88,12 +98,14 @@ export function Login() {
               </div>
 
               <div className="flex flex-col gap-1.5">
-                <label className="text-sm font-medium text-[var(--ds-text-primary)]">
+                <label htmlFor={passwordInputId} className="text-sm font-medium text-[var(--ds-text-primary)]">
                   Password
                 </label>
                 <div className="relative">
                   <input
+                    id={passwordInputId}
                     type={showPassword ? "text" : "password"}
+                    autoComplete="current-password"
                     className={`${inputCls} pr-10`}
                     placeholder="Your password"
                     value={password}
@@ -104,6 +116,8 @@ export function Login() {
                     type="button"
                     className="absolute right-3 top-1/2 -translate-y-1/2 text-[var(--ds-text-muted)]"
                     onClick={() => setShowPassword((v) => !v)}
+                    aria-label={showPassword ? "Hide password" : "Show password"}
+                    aria-pressed={showPassword}
                   >
                     {showPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
                   </button>

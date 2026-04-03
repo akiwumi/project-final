@@ -40,7 +40,7 @@ export function Navbar() {
             style={{ fontFamily: "var(--ds-font-display)", fontStyle: "italic" }}
           >
             <span className="font-bold text-[var(--ds-text-primary)]">Connect</span>
-            <span className="font-bold text-[var(--ds-accent)]">Africa</span>
+            <span className="font-bold text-[var(--ds-accent-green)]">Africa</span>
           </Link>
 
           <div className="hidden md:flex items-center gap-6">
@@ -104,13 +104,15 @@ export function Navbar() {
             className="md:hidden p-2 text-[var(--ds-text-primary)]"
             onClick={() => setMobileOpen(!mobileOpen)}
             aria-label="Toggle menu"
+            aria-expanded={mobileOpen}
+            aria-controls="navbar-mobile-menu"
           >
             {mobileOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
           </button>
         </div>
 
         {mobileOpen && (
-          <div className="md:hidden py-4 border-t border-[var(--ds-border)]">
+          <div id="navbar-mobile-menu" className="md:hidden py-4 border-t border-[var(--ds-border)]">
             <div className="flex flex-col gap-3">
               {isLoading ? (
                 <span className="py-2 text-xs font-medium text-[var(--ds-text-muted)]">

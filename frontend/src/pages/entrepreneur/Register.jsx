@@ -45,15 +45,27 @@ function validatePassword(password) {
   return null;
 }
 
-function InputField({ label, required, error, children }) {
+function InputField({ label, inputId, required, error, errorId, children }) {
+  const resolvedErrorId = errorId || (inputId ? `${inputId}-error` : undefined);
   return (
     <div className="flex flex-col gap-1.5">
-      <label className="text-sm font-medium text-[var(--ds-text-primary)]">
-        {label}
-        {required && <span className="text-red-500 ml-0.5">*</span>}
-      </label>
+      {inputId ? (
+        <label htmlFor={inputId} className="text-sm font-medium text-[var(--ds-text-primary)]">
+          {label}
+          {required && <span className="text-red-500 ml-0.5">*</span>}
+        </label>
+      ) : (
+        <p className="text-sm font-medium text-[var(--ds-text-primary)]">
+          {label}
+          {required && <span className="text-red-500 ml-0.5">*</span>}
+        </p>
+      )}
       {children}
-      {error && <p className="text-xs text-red-500">{error}</p>}
+      {error && (
+        <p id={resolvedErrorId} className="text-xs text-red-500">
+          {error}
+        </p>
+      )}
     </div>
   );
 }
@@ -71,6 +83,24 @@ const inputCls =
 
 const selectCls =
   "w-full px-4 py-2.5 rounded-xl border border-[var(--ds-border)] bg-white text-[var(--ds-text-primary)] focus:outline-none focus:ring-2 focus:ring-[var(--ds-accent)] focus:border-transparent text-sm appearance-none";
+
+const FIELD_IDS = {
+  firstName: "register-first-name",
+  lastName: "register-last-name",
+  email: "register-email",
+  phoneCode: "register-phone-code",
+  phone: "register-phone",
+  password: "register-password",
+  confirmPassword: "register-confirm-password",
+  companyName: "register-company-name",
+  website: "register-company-website",
+  yearsOperating: "register-years-operating",
+  employees: "register-employees",
+  companyAddress: "register-company-address",
+  city: "register-city",
+  country: "register-country",
+  agreePrivacy: "register-agree-privacy",
+};
 
 export function EntrepreneurRegister() {
   const navigate = useNavigate();
@@ -259,6 +289,7 @@ export function EntrepreneurRegister() {
             <p className="text-xs text-[var(--ds-text-muted)]">
               Didn't receive it? Check your spam folder or{" "}
               <button
+                type="button"
                 className="underline text-[var(--ds-accent)] hover:text-[var(--ds-accent-hover)]"
                 onClick={() => setSubmitted(false)}
               >
@@ -275,7 +306,9 @@ export function EntrepreneurRegister() {
               {resending ? "Resending..." : "Resend confirmation email"}
             </button>
             {resendMsg && (
-              <p className="mt-3 text-xs text-[var(--ds-text-secondary)]">{resendMsg}</p>
+              <p role="status" aria-live="polite" className="mt-3 text-xs text-[var(--ds-text-secondary)]">
+                {resendMsg}
+              </p>
             )}
           </div>
         </main>
@@ -311,58 +344,80 @@ export function EntrepreneurRegister() {
           </div>
 
           {Object.keys(errors).length > 0 && (
-            <div className="mb-6 p-4 rounded-xl bg-red-50 border border-red-200 text-sm text-red-700">
+            <div
+              id="register-errors-summary"
+              role="alert"
+              aria-live="assertive"
+              className="mb-6 p-4 rounded-xl bg-red-50 border border-red-200 text-sm text-red-700"
+            >
               Please fix the highlighted fields before continuing.
             </div>
           )}
           {submitError && (
-            <div className="mb-6 p-4 rounded-xl bg-red-50 border border-red-200 text-sm text-red-700">
+            <div role="alert" aria-live="assertive" className="mb-6 p-4 rounded-xl bg-red-50 border border-red-200 text-sm text-red-700">
               {submitError}
             </div>
           )}
 
-          <form onSubmit={handleSubmit} noValidate className="space-y-2">
+          <form onSubmit={handleSubmit} noValidate className="space-y-2" aria-describedby={Object.keys(errors).length > 0 ? "register-errors-summary" : undefined}>
             {/* Personal Details */}
             <SectionTitle>Personal Details</SectionTitle>
 
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-              <InputField label="First name" required error={errors.firstName}>
+              <InputField label="First name" inputId={FIELD_IDS.firstName} required error={errors.firstName}>
                 <input
+                  id={FIELD_IDS.firstName}
                   type="text"
                   className={inputCls}
                   placeholder="Jane"
                   value={form.firstName}
                   onChange={set("firstName")}
+                  required
+                  autoComplete="given-name"
+                  aria-invalid={Boolean(errors.firstName)}
+                  aria-describedby={errors.firstName ? `${FIELD_IDS.firstName}-error` : undefined}
                 />
               </InputField>
-              <InputField label="Last name" required error={errors.lastName}>
+              <InputField label="Last name" inputId={FIELD_IDS.lastName} required error={errors.lastName}>
                 <input
+                  id={FIELD_IDS.lastName}
                   type="text"
                   className={inputCls}
                   placeholder="Doe"
                   value={form.lastName}
                   onChange={set("lastName")}
+                  required
+                  autoComplete="family-name"
+                  aria-invalid={Boolean(errors.lastName)}
+                  aria-describedby={errors.lastName ? `${FIELD_IDS.lastName}-error` : undefined}
                 />
               </InputField>
             </div>
 
-            <InputField label="Email address" required error={errors.email}>
+            <InputField label="Email address" inputId={FIELD_IDS.email} required error={errors.email}>
               <input
+                id={FIELD_IDS.email}
                 type="email"
                 className={inputCls}
                 placeholder="jane@company.com"
                 value={form.email}
                 onChange={set("email")}
+                required
+                autoComplete="email"
+                aria-invalid={Boolean(errors.email)}
+                aria-describedby={errors.email ? `${FIELD_IDS.email}-error` : undefined}
               />
             </InputField>
 
-            <InputField label="Phone number" required error={errors.phone}>
+            <InputField label="Phone number" inputId={FIELD_IDS.phone} required error={errors.phone}>
               <div className="flex gap-2">
                 <div className="relative">
                   <select
+                    id={FIELD_IDS.phoneCode}
                     className={`${selectCls} w-32 pr-8`}
                     value={form.phoneCode}
                     onChange={set("phoneCode")}
+                    aria-label="Country calling code"
                   >
                     {COUNTRY_CODES.map((c) => (
                       <option key={c.code} value={c.code}>
@@ -373,34 +428,51 @@ export function EntrepreneurRegister() {
                   <ChevronDown className="absolute right-2 top-1/2 -translate-y-1/2 w-4 h-4 text-[var(--ds-text-muted)] pointer-events-none" />
                 </div>
                 <input
+                  id={FIELD_IDS.phone}
                   type="tel"
                   className={`${inputCls} flex-1`}
                   placeholder="712 345 6789"
                   value={form.phone}
                   onChange={set("phone")}
+                  required
+                  autoComplete="tel-national"
+                  aria-invalid={Boolean(errors.phone)}
+                  aria-describedby={errors.phone ? `${FIELD_IDS.phone}-error` : undefined}
                 />
               </div>
             </InputField>
 
-            <InputField label="Password" required error={errors.password}>
+            <InputField label="Password" inputId={FIELD_IDS.password} required error={errors.password}>
               <div className="relative">
                 <input
+                  id={FIELD_IDS.password}
                   type={showPassword ? "text" : "password"}
                   className={`${inputCls} pr-10`}
                   placeholder="At least 8 characters"
                   value={form.password}
                   onChange={set("password")}
+                  required
+                  autoComplete="new-password"
+                  aria-invalid={Boolean(errors.password)}
+                  aria-describedby={[
+                    errors.password ? `${FIELD_IDS.password}-error` : null,
+                    form.password.length > 0 ? "register-password-rules" : null,
+                  ]
+                    .filter(Boolean)
+                    .join(" ") || undefined}
                 />
                 <button
                   type="button"
                   className="absolute right-3 top-1/2 -translate-y-1/2 text-[var(--ds-text-muted)]"
                   onClick={() => setShowPassword((v) => !v)}
+                  aria-label={showPassword ? "Hide password" : "Show password"}
+                  aria-pressed={showPassword}
                 >
                   {showPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
                 </button>
               </div>
               {form.password.length > 0 && (
-                <ul className="mt-2 space-y-1">
+                <ul id="register-password-rules" className="mt-2 space-y-1">
                   {[
                     { label: "At least 8 characters", ok: form.password.length >= 8 },
                     { label: "One uppercase letter (A–Z)", ok: /[A-Z]/.test(form.password) },
@@ -419,19 +491,26 @@ export function EntrepreneurRegister() {
               )}
             </InputField>
 
-            <InputField label="Confirm password" required error={errors.confirmPassword}>
+            <InputField label="Confirm password" inputId={FIELD_IDS.confirmPassword} required error={errors.confirmPassword}>
               <div className="relative">
                 <input
+                  id={FIELD_IDS.confirmPassword}
                   type={showConfirm ? "text" : "password"}
                   className={`${inputCls} pr-10`}
                   placeholder="Repeat your password"
                   value={form.confirmPassword}
                   onChange={set("confirmPassword")}
+                  required
+                  autoComplete="new-password"
+                  aria-invalid={Boolean(errors.confirmPassword)}
+                  aria-describedby={errors.confirmPassword ? `${FIELD_IDS.confirmPassword}-error` : undefined}
                 />
                 <button
                   type="button"
                   className="absolute right-3 top-1/2 -translate-y-1/2 text-[var(--ds-text-muted)]"
                   onClick={() => setShowConfirm((v) => !v)}
+                  aria-label={showConfirm ? "Hide confirm password" : "Show confirm password"}
+                  aria-pressed={showConfirm}
                 >
                   {showConfirm ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
                 </button>
@@ -441,27 +520,39 @@ export function EntrepreneurRegister() {
             {/* Company Details */}
             <SectionTitle>Company Details</SectionTitle>
 
-            <InputField label="Company name" required error={errors.companyName}>
+            <InputField label="Company name" inputId={FIELD_IDS.companyName} required error={errors.companyName}>
               <input
+                id={FIELD_IDS.companyName}
                 type="text"
                 className={inputCls}
                 placeholder="Acme Ltd."
                 value={form.companyName}
                 onChange={set("companyName")}
+                required
+                aria-invalid={Boolean(errors.companyName)}
+                aria-describedby={errors.companyName ? `${FIELD_IDS.companyName}-error` : undefined}
               />
             </InputField>
 
-            <InputField label="Company website" error={errors.website}>
+            <InputField label="Company website" inputId={FIELD_IDS.website} error={errors.website}>
               <input
+                id={FIELD_IDS.website}
                 type="url"
                 className={inputCls}
                 placeholder="https://www.yourcompany.com"
                 value={form.website}
                 onChange={set("website")}
+                autoComplete="url"
+                aria-invalid={Boolean(errors.website)}
+                aria-describedby={errors.website ? `${FIELD_IDS.website}-error` : undefined}
               />
             </InputField>
 
-            <InputField label="Company type" required error={errors.companyType}>
+            <fieldset className="flex flex-col gap-1.5" aria-invalid={Boolean(errors.companyType)}>
+              <legend className="text-sm font-medium text-[var(--ds-text-primary)]">
+                Company type
+                <span className="text-red-500 ml-0.5">*</span>
+              </legend>
               <div className="flex gap-3">
                 {[
                   { value: "startup", label: "Startup" },
@@ -487,15 +578,22 @@ export function EntrepreneurRegister() {
                   </label>
                 ))}
               </div>
-            </InputField>
+              {errors.companyType && (
+                <p id="register-company-type-error" className="text-xs text-red-500">
+                  {errors.companyType}
+                </p>
+              )}
+            </fieldset>
 
             {form.companyType === "ongoing" && (
               <InputField
                 label="Years in operation"
+                inputId={FIELD_IDS.yearsOperating}
                 required
                 error={errors.yearsOperating}
               >
                 <input
+                  id={FIELD_IDS.yearsOperating}
                   type="number"
                   min="1"
                   max="200"
@@ -503,16 +601,24 @@ export function EntrepreneurRegister() {
                   placeholder="e.g. 5"
                   value={form.yearsOperating}
                   onChange={set("yearsOperating")}
+                  required
+                  inputMode="numeric"
+                  aria-invalid={Boolean(errors.yearsOperating)}
+                  aria-describedby={errors.yearsOperating ? `${FIELD_IDS.yearsOperating}-error` : undefined}
                 />
               </InputField>
             )}
 
-            <InputField label="Number of employees" required error={errors.employees}>
+            <InputField label="Number of employees" inputId={FIELD_IDS.employees} required error={errors.employees}>
               <div className="relative">
                 <select
+                  id={FIELD_IDS.employees}
                   className={`${selectCls} pr-8`}
                   value={form.employees}
                   onChange={set("employees")}
+                  required
+                  aria-invalid={Boolean(errors.employees)}
+                  aria-describedby={errors.employees ? `${FIELD_IDS.employees}-error` : undefined}
                 >
                   <option value="">Select range</option>
                   {EMPLOYEE_RANGES.map((r) => (
@@ -528,47 +634,65 @@ export function EntrepreneurRegister() {
             {/* Address */}
             <SectionTitle>Location</SectionTitle>
 
-            <InputField label="Street address" required error={errors.companyAddress}>
+            <InputField label="Street address" inputId={FIELD_IDS.companyAddress} required error={errors.companyAddress}>
               <input
+                id={FIELD_IDS.companyAddress}
                 type="text"
                 className={inputCls}
                 placeholder="123 Main Street"
                 value={form.companyAddress}
                 onChange={set("companyAddress")}
+                required
+                autoComplete="street-address"
+                aria-invalid={Boolean(errors.companyAddress)}
+                aria-describedby={errors.companyAddress ? `${FIELD_IDS.companyAddress}-error` : undefined}
               />
             </InputField>
 
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-              <InputField label="City" required error={errors.city}>
+              <InputField label="City" inputId={FIELD_IDS.city} required error={errors.city}>
                 <input
+                  id={FIELD_IDS.city}
                   type="text"
                   className={inputCls}
                   placeholder="Nairobi"
                   value={form.city}
                   onChange={set("city")}
+                  required
+                  autoComplete="address-level2"
+                  aria-invalid={Boolean(errors.city)}
+                  aria-describedby={errors.city ? `${FIELD_IDS.city}-error` : undefined}
                 />
               </InputField>
-              <InputField label="Country" required error={errors.country}>
+              <InputField label="Country" inputId={FIELD_IDS.country} required error={errors.country}>
                 <input
+                  id={FIELD_IDS.country}
                   type="text"
                   className={inputCls}
                   placeholder="Kenya"
                   value={form.country}
                   onChange={set("country")}
+                  required
+                  autoComplete="country-name"
+                  aria-invalid={Boolean(errors.country)}
+                  aria-describedby={errors.country ? `${FIELD_IDS.country}-error` : undefined}
                 />
               </InputField>
             </div>
 
             {/* Privacy */}
             <div className="mt-6 pt-4 border-t border-[var(--ds-border)]">
-              <label className="flex items-start gap-3 cursor-pointer">
+              <div className="flex items-start gap-3">
                 <input
+                  id={FIELD_IDS.agreePrivacy}
                   type="checkbox"
                   className="mt-0.5 accent-[var(--ds-accent)] w-4 h-4 rounded"
                   checked={form.agreePrivacy}
                   onChange={set("agreePrivacy")}
+                  aria-invalid={Boolean(errors.agreePrivacy)}
+                  aria-describedby={errors.agreePrivacy ? `${FIELD_IDS.agreePrivacy}-error` : undefined}
                 />
-                <span className="text-sm text-[var(--ds-text-secondary)] leading-relaxed">
+                <label htmlFor={FIELD_IDS.agreePrivacy} className="text-sm text-[var(--ds-text-secondary)] leading-relaxed">
                   I agree to the{" "}
                   <Link to="/terms" className="text-[var(--ds-accent)] underline hover:text-[var(--ds-accent-hover)]">
                     Terms of Service
@@ -578,10 +702,10 @@ export function EntrepreneurRegister() {
                     Privacy Policy
                   </Link>
                   . I understand a confirmation email will be sent before my account is activated.
-                </span>
-              </label>
+                </label>
+              </div>
               {errors.agreePrivacy && (
-                <p className="mt-1 text-xs text-red-500">{errors.agreePrivacy}</p>
+                <p id={`${FIELD_IDS.agreePrivacy}-error`} className="mt-1 text-xs text-red-500">{errors.agreePrivacy}</p>
               )}
             </div>
 

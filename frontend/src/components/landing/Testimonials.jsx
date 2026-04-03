@@ -107,7 +107,7 @@ export function Testimonials() {
                 </div>
                 <div>
                   <p className="font-semibold text-[var(--ds-text-primary)] text-sm">{t.name}</p>
-                  <p className="text-xs text-[var(--ds-text-muted)]">
+                  <p className="text-xs text-[var(--ds-text-secondary)]">
                     {t.role} · {t.company} · {t.country}
                   </p>
                 </div>

@@ -31,6 +31,9 @@ export function EntrepreneurProfile() {
   const [saving, setSaving] = useState(false);
   const [saveError, setSaveError] = useState("");
   const [profile, setProfile] = useState(null);
+  const avatarInputId = "entrepreneur-profile-avatar";
+  const bioInputId = "entrepreneur-profile-bio";
+  const presentationInputId = "entrepreneur-profile-presentation";
 
   useEffect(() => {
     if (isAuthLoading) return;
@@ -142,13 +145,13 @@ export function EntrepreneurProfile() {
           </div>
 
           {saved && (
-            <div className="mb-6 flex items-center gap-2 p-4 rounded-xl bg-green-50 border border-green-200 text-sm text-green-700">
+            <div role="status" aria-live="polite" className="mb-6 flex items-center gap-2 p-4 rounded-xl bg-green-50 border border-green-200 text-sm text-green-700">
               <CheckCircle className="w-4 h-4 shrink-0" />
               Profile saved successfully.
             </div>
           )}
           {saveError && (
-            <div className="mb-6 p-4 rounded-xl bg-red-50 border border-red-200 text-sm text-red-700">
+            <div role="alert" aria-live="assertive" className="mb-6 p-4 rounded-xl bg-red-50 border border-red-200 text-sm text-red-700">
               {saveError}
             </div>
           )}
@@ -176,10 +179,12 @@ export function EntrepreneurProfile() {
                     type="button"
                     className="absolute bottom-0 right-0 w-7 h-7 rounded-full bg-[var(--ds-accent)] flex items-center justify-center text-white shadow"
                     onClick={() => fileInputRef.current?.click()}
+                    aria-label="Upload profile photo"
                   >
                     <Camera className="w-3.5 h-3.5" />
                   </button>
                   <input
+                    id={avatarInputId}
                     ref={fileInputRef}
                     type="file"
                     accept="image/*"
@@ -213,10 +218,11 @@ export function EntrepreneurProfile() {
               </h2>
               <div className="space-y-4">
                 <div>
-                  <label className="block text-sm font-medium text-[var(--ds-text-primary)] mb-1.5">
+                  <label htmlFor={bioInputId} className="block text-sm font-medium text-[var(--ds-text-primary)] mb-1.5">
                     Personal bio
                   </label>
                   <textarea
+                    id={bioInputId}
                     rows={4}
                     className={`${inputCls} resize-none`}
                     placeholder="Tell investors a little about yourself — your background, expertise, and what drives you..."
@@ -228,10 +234,11 @@ export function EntrepreneurProfile() {
                   </p>
                 </div>
                 <div>
-                  <label className="block text-sm font-medium text-[var(--ds-text-primary)] mb-1.5">
+                  <label htmlFor={presentationInputId} className="block text-sm font-medium text-[var(--ds-text-primary)] mb-1.5">
                     Company presentation
                   </label>
                   <textarea
+                    id={presentationInputId}
                     rows={5}
                     className={`${inputCls} resize-none`}
                     placeholder="Describe your company, its mission, what problem it solves, and why you are seeking investment..."

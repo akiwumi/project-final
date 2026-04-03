@@ -30,6 +30,11 @@ export function AdminRegister() {
   const [error, setError] = useState("");
   const [success, setSuccess] = useState("");
   const [submitting, setSubmitting] = useState(false);
+  const fullNameInputId = "admin-register-full-name";
+  const emailInputId = "admin-register-email";
+  const passwordInputId = "admin-register-password";
+  const confirmPasswordInputId = "admin-register-confirm-password";
+  const inviteCodeInputId = "admin-register-invite-code";
 
   useEffect(() => {
     let active = true;
@@ -139,22 +144,24 @@ export function AdminRegister() {
         </div>
 
         {error && (
-          <div className="mb-5 p-3 rounded-xl border text-sm bg-red-50 border-red-200 text-red-700">
+          <div role="alert" aria-live="assertive" className="mb-5 p-3 rounded-xl border text-sm bg-red-50 border-red-200 text-red-700">
             {error}
           </div>
         )}
 
         {success && (
-          <div className="mb-5 p-3 rounded-xl border text-sm bg-green-50 border-green-200 text-green-700">
+          <div role="status" aria-live="polite" className="mb-5 p-3 rounded-xl border text-sm bg-green-50 border-green-200 text-green-700">
             {success}
           </div>
         )}
 
         <form onSubmit={handleSubmit} className="space-y-4" noValidate>
           <div className="flex flex-col gap-1.5">
-            <label className="text-sm font-medium text-[var(--ds-text-primary)]">Full Name</label>
+            <label htmlFor={fullNameInputId} className="text-sm font-medium text-[var(--ds-text-primary)]">Full Name</label>
             <input
+              id={fullNameInputId}
               type="text"
+              autoComplete="name"
               className={inputCls}
               placeholder="Admin Name"
               value={form.fullName}
@@ -164,9 +171,11 @@ export function AdminRegister() {
           </div>
 
           <div className="flex flex-col gap-1.5">
-            <label className="text-sm font-medium text-[var(--ds-text-primary)]">Email</label>
+            <label htmlFor={emailInputId} className="text-sm font-medium text-[var(--ds-text-primary)]">Email</label>
             <input
+              id={emailInputId}
               type="email"
+              autoComplete="email"
               className={inputCls}
               placeholder="admin@company.com"
               value={form.email}
@@ -176,10 +185,12 @@ export function AdminRegister() {
           </div>
 
           <div className="flex flex-col gap-1.5">
-            <label className="text-sm font-medium text-[var(--ds-text-primary)]">Password</label>
+            <label htmlFor={passwordInputId} className="text-sm font-medium text-[var(--ds-text-primary)]">Password</label>
             <div className="relative">
               <input
+                id={passwordInputId}
                 type={showPassword ? "text" : "password"}
+                autoComplete="new-password"
                 className={`${inputCls} pr-10`}
                 placeholder="Minimum 12 characters"
                 value={form.password}
@@ -190,6 +201,8 @@ export function AdminRegister() {
                 type="button"
                 className="absolute right-3 top-1/2 -translate-y-1/2 text-[var(--ds-text-muted)]"
                 onClick={() => setShowPassword((value) => !value)}
+                aria-label={showPassword ? "Hide password" : "Show password"}
+                aria-pressed={showPassword}
               >
                 {showPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
               </button>
@@ -197,12 +210,14 @@ export function AdminRegister() {
           </div>
 
           <div className="flex flex-col gap-1.5">
-            <label className="text-sm font-medium text-[var(--ds-text-primary)]">
+            <label htmlFor={confirmPasswordInputId} className="text-sm font-medium text-[var(--ds-text-primary)]">
               Confirm Password
             </label>
             <div className="relative">
               <input
+                id={confirmPasswordInputId}
                 type={showConfirmPassword ? "text" : "password"}
+                autoComplete="new-password"
                 className={`${inputCls} pr-10`}
                 placeholder="Re-enter password"
                 value={form.confirmPassword}
@@ -213,6 +228,8 @@ export function AdminRegister() {
                 type="button"
                 className="absolute right-3 top-1/2 -translate-y-1/2 text-[var(--ds-text-muted)]"
                 onClick={() => setShowConfirmPassword((value) => !value)}
+                aria-label={showConfirmPassword ? "Hide confirm password" : "Show confirm password"}
+                aria-pressed={showConfirmPassword}
               >
                 {showConfirmPassword ? (
                   <EyeOff className="w-4 h-4" />
@@ -224,11 +241,13 @@ export function AdminRegister() {
           </div>
 
           <div className="flex flex-col gap-1.5">
-            <label className="text-sm font-medium text-[var(--ds-text-primary)]">
+            <label htmlFor={inviteCodeInputId} className="text-sm font-medium text-[var(--ds-text-primary)]">
               Admin Invite Code
             </label>
             <input
+              id={inviteCodeInputId}
               type="password"
+              autoComplete="one-time-code"
               className={inputCls}
               placeholder="Invite code"
               value={form.inviteCode}

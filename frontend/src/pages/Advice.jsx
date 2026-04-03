@@ -428,8 +428,13 @@ export function AdvicePage() {
                 delivered to your inbox every month. No spam. Unsubscribe any time.
               </p>
               <div className="flex flex-col sm:flex-row gap-3 max-w-md mx-auto">
+                <label htmlFor="advice-newsletter-email" className="sr-only">
+                  Email address
+                </label>
                 <input
+                  id="advice-newsletter-email"
                   type="email"
+                  autoComplete="email"
                   className="flex-1 px-4 py-3 rounded-xl border border-[var(--ds-border)] text-sm text-[var(--ds-text-primary)] placeholder:text-[var(--ds-text-muted)] focus:outline-none focus:ring-2 focus:ring-[var(--ds-accent)] focus:border-transparent"
                   placeholder="your@email.com"
                 />

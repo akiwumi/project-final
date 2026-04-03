@@ -34,7 +34,7 @@ export function Footer() {
             </p>
           </div>
           <div>
-            <h4 className="text-xs uppercase tracking-[0.15em] font-medium text-[var(--ds-accent)] mb-4">Product</h4>
+            <h3 className="text-xs uppercase tracking-[0.15em] font-medium text-[var(--ds-accent)] mb-4">Product</h3>
             <ul className="space-y-2.5">
               {footerLinks.product.map((link) => (
                 <li key={link.label}>
@@ -49,7 +49,7 @@ export function Footer() {
             </ul>
           </div>
           <div>
-            <h4 className="text-xs uppercase tracking-[0.15em] font-medium text-[var(--ds-accent)] mb-4">Resources</h4>
+            <h3 className="text-xs uppercase tracking-[0.15em] font-medium text-[var(--ds-accent)] mb-4">Resources</h3>
             <ul className="space-y-2.5">
               {footerLinks.resources.map((link) => (
                 <li key={link.label}>
@@ -64,7 +64,7 @@ export function Footer() {
             </ul>
           </div>
           <div>
-            <h4 className="text-xs uppercase tracking-[0.15em] font-medium text-[var(--ds-accent)] mb-4">Contact</h4>
+            <h3 className="text-xs uppercase tracking-[0.15em] font-medium text-[var(--ds-accent)] mb-4">Contact</h3>
             <p className="text-sm flex items-center gap-2 text-[var(--ds-text-on-dark)]/65">
               <MapPin className="w-4 h-4 shrink-0" />
               Africa · Global
@@ -80,7 +80,7 @@ export function Footer() {
             </p>
           </div>
         </div>
-        <div className="mt-12 pt-8 border-t border-white/10 text-center text-xs text-[var(--ds-text-on-dark)]/40">
+        <div className="mt-12 pt-8 border-t border-white/10 text-center text-xs text-[var(--ds-text-on-dark)]/60">
           © {new Date().getFullYear()} Connect Africa. All rights reserved.
         </div>
       </div>

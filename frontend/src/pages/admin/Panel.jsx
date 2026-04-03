@@ -28,6 +28,19 @@ const textareaCls =
 const statusCls =
   "px-2 py-1 rounded-full text-xs font-semibold bg-[var(--ds-accent)]/10 text-[var(--ds-accent)]";
 
+const FIELD_IDS = {
+  projectOwner: "admin-panel-project-owner",
+  projectTitle: "admin-panel-project-title",
+  projectCategory: "admin-panel-project-category",
+  projectStage: "admin-panel-project-stage",
+  projectAmount: "admin-panel-project-amount",
+  projectCountry: "admin-panel-project-country",
+  projectStatus: "admin-panel-project-status",
+  projectSummary: "admin-panel-project-summary",
+  tableRowId: "admin-panel-table-row-id",
+  tablePayload: "admin-panel-table-payload",
+};
+
 function formatDate(value) {
   if (!value) return "-";
   const date = new Date(value);
@@ -844,10 +857,11 @@ export function AdminPanel() {
             <Section title="Add New Post / Project" subtitle="Create posts on behalf of users">
               <form onSubmit={handleCreateProject} className="grid grid-cols-1 md:grid-cols-2 gap-3">
                 <div className="md:col-span-2">
-                  <label className="block text-xs font-semibold uppercase tracking-wide text-[var(--ds-text-muted)] mb-1">
+                  <label htmlFor={FIELD_IDS.projectOwner} className="block text-xs font-semibold uppercase tracking-wide text-[var(--ds-text-muted)] mb-1">
                     Owner User
                   </label>
                   <select
+                    id={FIELD_IDS.projectOwner}
                     className={inputCls}
                     value={projectForm.entrepreneur_id}
                     onChange={(event) => setProjectField("entrepreneur_id", event.target.value)}
@@ -862,10 +876,11 @@ export function AdminPanel() {
                 </div>
 
                 <div>
-                  <label className="block text-xs font-semibold uppercase tracking-wide text-[var(--ds-text-muted)] mb-1">
+                  <label htmlFor={FIELD_IDS.projectTitle} className="block text-xs font-semibold uppercase tracking-wide text-[var(--ds-text-muted)] mb-1">
                     Title
                   </label>
                   <input
+                    id={FIELD_IDS.projectTitle}
                     className={inputCls}
                     value={projectForm.title}
                     onChange={(event) => setProjectField("title", event.target.value)}
@@ -874,10 +889,11 @@ export function AdminPanel() {
                 </div>
 
                 <div>
-                  <label className="block text-xs font-semibold uppercase tracking-wide text-[var(--ds-text-muted)] mb-1">
+                  <label htmlFor={FIELD_IDS.projectCategory} className="block text-xs font-semibold uppercase tracking-wide text-[var(--ds-text-muted)] mb-1">
                     Category
                   </label>
                   <input
+                    id={FIELD_IDS.projectCategory}
                     className={inputCls}
                     value={projectForm.category}
                     onChange={(event) => setProjectField("category", event.target.value)}
@@ -886,10 +902,11 @@ export function AdminPanel() {
                 </div>
 
                 <div>
-                  <label className="block text-xs font-semibold uppercase tracking-wide text-[var(--ds-text-muted)] mb-1">
+                  <label htmlFor={FIELD_IDS.projectStage} className="block text-xs font-semibold uppercase tracking-wide text-[var(--ds-text-muted)] mb-1">
                     Stage
                   </label>
                   <input
+                    id={FIELD_IDS.projectStage}
                     className={inputCls}
                     value={projectForm.stage}
                     onChange={(event) => setProjectField("stage", event.target.value)}
@@ -898,10 +915,11 @@ export function AdminPanel() {
                 </div>
 
                 <div>
-                  <label className="block text-xs font-semibold uppercase tracking-wide text-[var(--ds-text-muted)] mb-1">
+                  <label htmlFor={FIELD_IDS.projectAmount} className="block text-xs font-semibold uppercase tracking-wide text-[var(--ds-text-muted)] mb-1">
                     Amount Seeking
                   </label>
                   <input
+                    id={FIELD_IDS.projectAmount}
                     className={inputCls}
                     value={projectForm.amount_seeking}
                     onChange={(event) => setProjectField("amount_seeking", event.target.value)}
@@ -910,10 +928,11 @@ export function AdminPanel() {
                 </div>
 
                 <div>
-                  <label className="block text-xs font-semibold uppercase tracking-wide text-[var(--ds-text-muted)] mb-1">
+                  <label htmlFor={FIELD_IDS.projectCountry} className="block text-xs font-semibold uppercase tracking-wide text-[var(--ds-text-muted)] mb-1">
                     Country
                   </label>
                   <input
+                    id={FIELD_IDS.projectCountry}
                     className={inputCls}
                     value={projectForm.country}
                     onChange={(event) => setProjectField("country", event.target.value)}
@@ -922,10 +941,11 @@ export function AdminPanel() {
                 </div>
 
                 <div>
-                  <label className="block text-xs font-semibold uppercase tracking-wide text-[var(--ds-text-muted)] mb-1">
+                  <label htmlFor={FIELD_IDS.projectStatus} className="block text-xs font-semibold uppercase tracking-wide text-[var(--ds-text-muted)] mb-1">
                     Status
                   </label>
                   <select
+                    id={FIELD_IDS.projectStatus}
                     className={inputCls}
                     value={projectForm.status}
                     onChange={(event) => setProjectField("status", event.target.value)}
@@ -938,10 +958,11 @@ export function AdminPanel() {
                 </div>
 
                 <div className="md:col-span-2">
-                  <label className="block text-xs font-semibold uppercase tracking-wide text-[var(--ds-text-muted)] mb-1">
+                  <label htmlFor={FIELD_IDS.projectSummary} className="block text-xs font-semibold uppercase tracking-wide text-[var(--ds-text-muted)] mb-1">
                     Summary
                   </label>
                   <textarea
+                    id={FIELD_IDS.projectSummary}
                     rows={4}
                     className={textareaCls}
                     value={projectForm.summary}
@@ -1163,10 +1184,11 @@ export function AdminPanel() {
               >
                 <div className="space-y-3">
                   <div>
-                    <label className="block text-xs font-semibold uppercase tracking-wide text-[var(--ds-text-muted)] mb-1">
+                    <label htmlFor={FIELD_IDS.tableRowId} className="block text-xs font-semibold uppercase tracking-wide text-[var(--ds-text-muted)] mb-1">
                       Row ID (for update/delete)
                     </label>
                     <input
+                      id={FIELD_IDS.tableRowId}
                       className={inputCls}
                       value={tableRowId}
                       onChange={(event) => setTableRowId(event.target.value)}
@@ -1175,10 +1197,11 @@ export function AdminPanel() {
                   </div>
 
                   <div>
-                    <label className="block text-xs font-semibold uppercase tracking-wide text-[var(--ds-text-muted)] mb-1">
+                    <label htmlFor={FIELD_IDS.tablePayload} className="block text-xs font-semibold uppercase tracking-wide text-[var(--ds-text-muted)] mb-1">
                       JSON Payload
                     </label>
                     <textarea
+                      id={FIELD_IDS.tablePayload}
                       rows={8}
                       className={`${textareaCls} font-mono text-xs`}
                       value={tablePayload}

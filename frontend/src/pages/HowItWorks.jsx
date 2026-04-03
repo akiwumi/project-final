@@ -169,7 +169,7 @@ export function HowItWorksPage() {
   return (
     <div className="min-h-screen bg-[var(--ds-bg-light)]">
       <Navbar />
-      <main className="pt-16">
+      <main className="pt-16 overflow-x-hidden">
 
         {/* ── Hero ── */}
         <section className="bg-[var(--ds-bg-dark)] text-[var(--ds-text-on-dark)] py-24 px-4">
@@ -229,8 +229,8 @@ export function HowItWorksPage() {
                 {/* Text side */}
                 <motion.div
                   className="flex-1"
-                  initial={{ opacity: 0, x: roleIndex % 2 === 0 ? -30 : 30 }}
-                  whileInView={{ opacity: 1, x: 0 }}
+                  initial={{ opacity: 0, y: 24 }}
+                  whileInView={{ opacity: 1, y: 0 }}
                   viewport={{ once: true }}
                   transition={{ duration: 0.6 }}
                 >
@@ -289,8 +289,8 @@ export function HowItWorksPage() {
                 {/* Image side */}
                 <motion.div
                   className="flex-1 w-full"
-                  initial={{ opacity: 0, x: roleIndex % 2 === 0 ? 30 : -30 }}
-                  whileInView={{ opacity: 1, x: 0 }}
+                  initial={{ opacity: 0, y: 24 }}
+                  whileInView={{ opacity: 1, y: 0 }}
                   viewport={{ once: true }}
                   transition={{ duration: 0.6, delay: 0.1 }}
                 >

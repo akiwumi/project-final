@@ -177,8 +177,12 @@ export function ProjectFeed() {
           {/* Search + filter toggle */}
           <div className="flex gap-3 mb-4">
             <div className="relative flex-1">
+              <label htmlFor="project-feed-search" className="sr-only">
+                Search projects
+              </label>
               <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-[var(--ds-text-muted)]" />
               <input
+                id="project-feed-search"
                 type="search"
                 className="w-full pl-10 pr-4 py-2.5 rounded-xl border border-[var(--ds-border)] bg-white text-sm text-[var(--ds-text-primary)] placeholder:text-[var(--ds-text-muted)] focus:outline-none focus:ring-2 focus:ring-[var(--ds-accent)] focus:border-transparent"
                 placeholder="Search projects, companies, countries…"
@@ -190,6 +194,7 @@ export function ProjectFeed() {
                   type="button"
                   className="absolute right-3 top-1/2 -translate-y-1/2 text-[var(--ds-text-muted)] hover:text-[var(--ds-text-primary)]"
                   onClick={() => setSearch("")}
+                  aria-label="Clear search"
                 >
                   <X className="w-4 h-4" />
                 </button>

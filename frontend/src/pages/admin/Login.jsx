@@ -29,6 +29,9 @@ export function AdminLogin() {
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
   const [checkingExistingSession, setCheckingExistingSession] = useState(false);
+  const loginInputId = "admin-login-identifier";
+  const passwordInputId = "admin-login-password";
+  const statusMessageId = "admin-login-status";
 
   useEffect(() => {
     let active = true;
@@ -114,18 +117,25 @@ export function AdminLogin() {
         </div>
 
         {(error || checkingExistingSession) && (
-          <div className="mb-5 p-3 rounded-xl border text-sm bg-amber-50 border-amber-200 text-amber-800">
+          <div
+            id={statusMessageId}
+            role={error ? "alert" : "status"}
+            aria-live={error ? "assertive" : "polite"}
+            className="mb-5 p-3 rounded-xl border text-sm bg-amber-50 border-amber-200 text-amber-800"
+          >
             {checkingExistingSession ? "Checking admin permissions..." : error}
           </div>
         )}
 
         <form onSubmit={handleSubmit} className="space-y-4" noValidate>
           <div className="flex flex-col gap-1.5">
-            <label className="text-sm font-medium text-[var(--ds-text-primary)]">
+            <label htmlFor={loginInputId} className="text-sm font-medium text-[var(--ds-text-primary)]">
               Login or Email
             </label>
             <input
+              id={loginInputId}
               type="text"
+              autoComplete="username"
               className={inputCls}
               placeholder="sokina"
               value={emailOrLogin}
@@ -135,10 +145,12 @@ export function AdminLogin() {
           </div>
 
           <div className="flex flex-col gap-1.5">
-            <label className="text-sm font-medium text-[var(--ds-text-primary)]">Password</label>
+            <label htmlFor={passwordInputId} className="text-sm font-medium text-[var(--ds-text-primary)]">Password</label>
             <div className="relative">
               <input
+                id={passwordInputId}
                 type={showPassword ? "text" : "password"}
+                autoComplete="current-password"
                 className={`${inputCls} pr-10`}
                 placeholder="Your admin password"
                 value={password}
@@ -149,6 +161,8 @@ export function AdminLogin() {
                 type="button"
                 className="absolute right-3 top-1/2 -translate-y-1/2 text-[var(--ds-text-muted)]"
                 onClick={() => setShowPassword((value) => !value)}
+                aria-label={showPassword ? "Hide password" : "Show password"}
+                aria-pressed={showPassword}
               >
                 {showPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
               </button>

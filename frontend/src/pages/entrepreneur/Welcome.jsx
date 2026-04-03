@@ -54,12 +54,15 @@ const TC_SECTIONS = [
 ];
 
 function AccordionItem({ section, open, onToggle }) {
+  const contentId = `welcome-section-${section.id}`;
   return (
     <div className="border border-[var(--ds-border)] rounded-xl overflow-hidden">
       <button
         type="button"
         className="w-full flex items-center justify-between px-5 py-4 text-left bg-white hover:bg-[var(--ds-overlay)] transition"
         onClick={onToggle}
+        aria-expanded={open}
+        aria-controls={contentId}
       >
         <span className="font-semibold text-sm text-[var(--ds-text-primary)]">
           {section.title}
@@ -71,7 +74,10 @@ function AccordionItem({ section, open, onToggle }) {
         )}
       </button>
       {open && (
-        <div className="px-5 pb-5 pt-2 bg-white text-sm text-[var(--ds-text-secondary)] leading-relaxed border-t border-[var(--ds-border)]">
+        <div
+          id={contentId}
+          className="px-5 pb-5 pt-2 bg-white text-sm text-[var(--ds-text-secondary)] leading-relaxed border-t border-[var(--ds-border)]"
+        >
           {section.body}
         </div>
       )}
@@ -84,6 +90,7 @@ export function Welcome() {
   const { user, isLoading: isAuthLoading } = useAuth();
   const [openSection, setOpenSection] = useState(null);
   const [accepted, setAccepted] = useState(false);
+  const acceptedCheckboxId = "welcome-accept-terms";
 
   useEffect(() => {
     if (isAuthLoading) return;
@@ -188,19 +195,20 @@ export function Welcome() {
 
           {/* Acceptance */}
           <div className="bg-white rounded-2xl border border-[var(--ds-border)] p-6">
-            <label className="flex items-start gap-3 cursor-pointer mb-5">
+            <div className="flex items-start gap-3 mb-5">
               <input
+                id={acceptedCheckboxId}
                 type="checkbox"
                 className="mt-0.5 accent-[var(--ds-accent)] w-4 h-4"
                 checked={accepted}
                 onChange={(e) => setAccepted(e.target.checked)}
               />
-              <span className="text-sm text-[var(--ds-text-secondary)] leading-relaxed">
+              <label htmlFor={acceptedCheckboxId} className="text-sm text-[var(--ds-text-secondary)] leading-relaxed cursor-pointer">
                 I have read and I accept the Connect Africa Terms & Conditions, including the
                 submission fee policy (€1,000 per submission, with an 80% refund if the project
                 fails screening), the phone verification requirement, and the content standards.
-              </span>
-            </label>
+              </label>
+            </div>
             <button
               type="button"
               disabled={!accepted}

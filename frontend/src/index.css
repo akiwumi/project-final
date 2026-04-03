@@ -5,6 +5,7 @@
 body {
   margin: 0;
   font-family: var(--ds-font-sans);
+  overflow-x: hidden;
 }
 
 @media (max-width: 640px) and (orientation: portrait) {

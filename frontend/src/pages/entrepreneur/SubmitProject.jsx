@@ -48,21 +48,33 @@ const inputCls =
 const selectCls =
   "w-full px-4 py-2.5 rounded-xl border border-[var(--ds-border)] bg-white text-[var(--ds-text-primary)] focus:outline-none focus:ring-2 focus:ring-[var(--ds-accent)] focus:border-transparent text-sm appearance-none";
 
-function InputField({ label, required, hint, error, children }) {
+function InputField({ label, inputId, required, hint, error, errorId, children }) {
+  const resolvedErrorId = errorId || (inputId ? `${inputId}-error` : undefined);
   return (
     <div className="flex flex-col gap-1.5">
-      <label className="text-sm font-medium text-[var(--ds-text-primary)]">
-        {label}
-        {required && <span className="text-red-500 ml-0.5">*</span>}
-      </label>
+      {inputId ? (
+        <label htmlFor={inputId} className="text-sm font-medium text-[var(--ds-text-primary)]">
+          {label}
+          {required && <span className="text-red-500 ml-0.5">*</span>}
+        </label>
+      ) : (
+        <p className="text-sm font-medium text-[var(--ds-text-primary)]">
+          {label}
+          {required && <span className="text-red-500 ml-0.5">*</span>}
+        </p>
+      )}
       {hint && <p className="text-xs text-[var(--ds-text-muted)] -mt-1">{hint}</p>}
       {children}
-      {error && <p className="text-xs text-red-500">{error}</p>}
+      {error && (
+        <p id={resolvedErrorId} className="text-xs text-red-500">
+          {error}
+        </p>
+      )}
     </div>
   );
 }
 
-function FileDrop({ file, onFile, onRemove, error }) {
+function FileDrop({ inputId, file, onFile, onRemove, error, errorId, label }) {
   const inputRef = useRef(null);
   const [dragOver, setDragOver] = useState(false);
 
@@ -106,6 +118,7 @@ function FileDrop({ file, onFile, onRemove, error }) {
             type="button"
             onClick={onRemove}
             className="p-1 rounded-lg text-[var(--ds-text-muted)] hover:text-red-500 transition shrink-0"
+            aria-label={`Remove ${label}`}
           >
             <X className="w-4 h-4" />
           </button>
@@ -121,6 +134,15 @@ function FileDrop({ file, onFile, onRemove, error }) {
               : "border-[var(--ds-border)] hover:border-[var(--ds-accent)]/50"
           } ${error ? "border-red-300" : ""}`}
           onClick={() => inputRef.current?.click()}
+          onKeyDown={(event) => {
+            if (event.key === "Enter" || event.key === " ") {
+              event.preventDefault();
+              inputRef.current?.click();
+            }
+          }}
+          role="button"
+          tabIndex={0}
+          aria-label={`Upload ${label}`}
         >
           <Upload className="w-6 h-6 mx-auto mb-2 text-[var(--ds-text-muted)]" />
           <p className="text-sm font-medium text-[var(--ds-text-primary)] mb-1">
@@ -129,6 +151,7 @@ function FileDrop({ file, onFile, onRemove, error }) {
           </p>
           <p className="text-xs text-[var(--ds-text-muted)]">PDF only — max {MAX_FILE_SIZE_MB} MB</p>
           <input
+            id={inputId}
             ref={inputRef}
             type="file"
             accept=".pdf,application/pdf"
@@ -137,10 +160,25 @@ function FileDrop({ file, onFile, onRemove, error }) {
           />
         </div>
       )}
-      {error && <p className="text-xs text-red-500">{error}</p>}
+      {error && (
+        <p id={errorId} className="text-xs text-red-500">
+          {error}
+        </p>
+      )}
     </div>
   );
 }
+
+const FIELD_IDS = {
+  title: "submit-project-title",
+  category: "submit-project-category",
+  stage: "submit-project-stage",
+  amountSeeking: "submit-project-amount-seeking",
+  country: "submit-project-country",
+  summary: "submit-project-summary",
+  pitchFile: "submit-project-pitch-file",
+  businessPlanFile: "submit-project-business-plan-file",
+};
 
 export function SubmitProject() {
   const navigate = useNavigate();
@@ -257,30 +295,48 @@ export function SubmitProject() {
             </div>
 
             {Object.keys(errors).length > 0 && (
-              <div className="mb-6 p-4 rounded-xl bg-red-50 border border-red-200 text-sm text-red-700">
+              <div
+                id="submit-project-errors-summary"
+                role="alert"
+                aria-live="assertive"
+                className="mb-6 p-4 rounded-xl bg-red-50 border border-red-200 text-sm text-red-700"
+              >
                 Please fix the highlighted fields before continuing.
               </div>
             )}
 
-            <form onSubmit={handleSubmit} noValidate className="space-y-5">
+            <form
+              onSubmit={handleSubmit}
+              noValidate
+              className="space-y-5"
+              aria-describedby={Object.keys(errors).length > 0 ? "submit-project-errors-summary" : undefined}
+            >
 
-              <InputField label="Project / venture title" required error={errors.title}>
+              <InputField label="Project / venture title" inputId={FIELD_IDS.title} required error={errors.title}>
                 <input
+                  id={FIELD_IDS.title}
                   type="text"
                   className={inputCls}
                   placeholder="e.g. SolarGrid Africa — Rural Solar Micro-grids"
                   value={form.title}
                   onChange={(e) => setField("title", e.target.value)}
+                  required
+                  aria-invalid={Boolean(errors.title)}
+                  aria-describedby={errors.title ? `${FIELD_IDS.title}-error` : undefined}
                 />
               </InputField>
 
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                <InputField label="Business / industry category" required error={errors.category}>
+                <InputField label="Business / industry category" inputId={FIELD_IDS.category} required error={errors.category}>
                   <div className="relative">
                     <select
+                      id={FIELD_IDS.category}
                       className={`${selectCls} pr-8`}
                       value={form.category}
                       onChange={(e) => setField("category", e.target.value)}
+                      required
+                      aria-invalid={Boolean(errors.category)}
+                      aria-describedby={errors.category ? `${FIELD_IDS.category}-error` : undefined}
                     >
                       <option value="">Select category</option>
                       {BUSINESS_CATEGORIES.map((c) => (
@@ -293,12 +349,16 @@ export function SubmitProject() {
                   </div>
                 </InputField>
 
-                <InputField label="Funding stage" required error={errors.stage}>
+                <InputField label="Funding stage" inputId={FIELD_IDS.stage} required error={errors.stage}>
                   <div className="relative">
                     <select
+                      id={FIELD_IDS.stage}
                       className={`${selectCls} pr-8`}
                       value={form.stage}
                       onChange={(e) => setField("stage", e.target.value)}
+                      required
+                      aria-invalid={Boolean(errors.stage)}
+                      aria-describedby={errors.stage ? `${FIELD_IDS.stage}-error` : undefined}
                     >
                       <option value="">Select stage</option>
                       {FUNDING_STAGES.map((s) => (
@@ -315,42 +375,58 @@ export function SubmitProject() {
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <InputField
                   label="Amount seeking (€)"
+                  inputId={FIELD_IDS.amountSeeking}
                   required
                   hint="Investment amount in euros"
                   error={errors.amountSeeking}
                 >
                   <input
+                    id={FIELD_IDS.amountSeeking}
                     type="text"
                     className={inputCls}
                     placeholder="e.g. 500,000"
                     value={form.amountSeeking}
                     onChange={(e) => setField("amountSeeking", e.target.value)}
+                    required
+                    inputMode="decimal"
+                    aria-invalid={Boolean(errors.amountSeeking)}
+                    aria-describedby={errors.amountSeeking ? `${FIELD_IDS.amountSeeking}-error` : undefined}
                   />
                 </InputField>
 
-                <InputField label="Country of operation" required error={errors.country}>
+                <InputField label="Country of operation" inputId={FIELD_IDS.country} required error={errors.country}>
                   <input
+                    id={FIELD_IDS.country}
                     type="text"
                     className={inputCls}
                     placeholder="e.g. Kenya"
                     value={form.country}
                     onChange={(e) => setField("country", e.target.value)}
+                    required
+                    autoComplete="country-name"
+                    aria-invalid={Boolean(errors.country)}
+                    aria-describedby={errors.country ? `${FIELD_IDS.country}-error` : undefined}
                   />
                 </InputField>
               </div>
 
               <InputField
                 label="Project summary"
+                inputId={FIELD_IDS.summary}
                 required
                 hint="Minimum 100 characters. Describe the problem, your solution, market, and traction."
                 error={errors.summary}
               >
                 <textarea
+                  id={FIELD_IDS.summary}
                   rows={6}
                   className={`${inputCls} resize-none`}
                   placeholder="We are building a solar micro-grid solution for off-grid communities in rural Kenya. The problem we solve is..."
                   value={form.summary}
                   onChange={(e) => setField("summary", e.target.value)}
+                  required
+                  aria-invalid={Boolean(errors.summary)}
+                  aria-describedby={errors.summary ? `${FIELD_IDS.summary}-error` : undefined}
                 />
                 <p className="text-xs text-[var(--ds-text-muted)] text-right -mt-1">
                   {form.summary.length} chars
@@ -364,10 +440,13 @@ export function SubmitProject() {
                     Pitch Deck <span className="text-red-500">*</span>
                   </h3>
                   <FileDrop
+                    inputId={FIELD_IDS.pitchFile}
                     file={form.pitchFile}
                     onFile={(f) => setField("pitchFile", f)}
                     onRemove={() => setField("pitchFile", null)}
                     error={errors.pitchFile}
+                    errorId={`${FIELD_IDS.pitchFile}-error`}
+                    label="pitch deck PDF"
                   />
                 </div>
 
@@ -377,10 +456,13 @@ export function SubmitProject() {
                     <span className="text-[var(--ds-text-muted)] font-normal">(optional)</span>
                   </h3>
                   <FileDrop
+                    inputId={FIELD_IDS.businessPlanFile}
                     file={form.businessPlanFile}
                     onFile={(f) => setField("businessPlanFile", f)}
                     onRemove={() => setField("businessPlanFile", null)}
                     error={errors.businessPlanFile}
+                    errorId={`${FIELD_IDS.businessPlanFile}-error`}
+                    label="business plan PDF"
                   />
                 </div>
               </div>
