@@ -240,3 +240,90 @@ Use these as Tailwind arbitrary values: `bg-[var(--ds-accent)]`, `text-[var(--ds
 - **Frontend:** Vercel — `frontend/vercel.json` contains the SPA rewrite rule
 - **Backend:** Render or Heroku — `Procfile` defines `web: npm start --prefix backend`
 - See [`BACKEND_WIRING.md`](BACKEND_WIRING.md) → Section 16 for the full deployment checklist
+
+---
+
+## Recent improvements (2026-04-03)
+
+### 1) Realtime sign-in error fixed
+
+Resolved the runtime error:
+
+`Unhandled Promise Rejection: Error: cannot add postgres_changes callbacks for realtime:messages after subscribe().`
+
+**What was changed**
+- Updated `frontend/src/pages/entrepreneur/Dashboard.jsx` realtime lifecycle handling.
+- Ensured callbacks are registered before `.subscribe()`.
+- Moved channel cleanup to the effect return (React cleanup), instead of returning from inside an async function.
+- Added stale async guard and safe channel removal.
+- Changed channel naming to per-user (`messages:${user.id}`) to avoid collisions.
+
+### 2) Accessibility hardening across the app
+
+Implemented accessibility upgrades in core forms, navigation, admin tooling, and content pages:
+
+- Added explicit `label` ↔ `input` associations using `htmlFor`/`id`.
+- Added `aria-label` and `aria-pressed` to icon-only toggle buttons (for example password visibility and chat send).
+- Added `aria-expanded`/`aria-controls` on menu and accordion controls.
+- Added live regions for feedback states (`role="alert"` / `role="status"` + `aria-live`).
+- Improved heading structure in footer to fix heading-order audit.
+- Improved text contrast in targeted UI areas to satisfy contrast checks.
+
+**Key files updated**
+- `frontend/src/pages/entrepreneur/Login.jsx`
+- `frontend/src/pages/entrepreneur/Register.jsx`
+- `frontend/src/pages/entrepreneur/SubmitProject.jsx`
+- `frontend/src/pages/entrepreneur/Profile.jsx`
+- `frontend/src/pages/entrepreneur/Welcome.jsx`
+- `frontend/src/pages/entrepreneur/Dashboard.jsx`
+- `frontend/src/pages/admin/Login.jsx`
+- `frontend/src/pages/admin/Register.jsx`
+- `frontend/src/pages/admin/Panel.jsx`
+- `frontend/src/components/layout/Navbar.jsx`
+- `frontend/src/components/layout/Footer.jsx`
+- `frontend/src/components/landing/Testimonials.jsx`
+- `frontend/src/pages/ProjectFeed.jsx`
+- `frontend/src/pages/Advice.jsx`
+
+### 3) Responsive behavior verified and fixed
+
+Performed responsive validation at widths **320px**, **768px**, and **1600px** across Chromium, Firefox, and WebKit.
+
+**Fix applied**
+- Removed horizontal overflow risk on `/how-it-works` by changing horizontal entrance animations to vertical motion and tightening overflow handling in:
+  - `frontend/src/pages/HowItWorks.jsx`
+  - `frontend/src/index.css`
+
+### 4) Cross-browser support verification
+
+Ran automated browser smoke checks for Chromium, Firefox, and WebKit on major routes:
+- `/`
+- `/login`
+- `/register`
+- `/how-it-works`
+- `/advice`
+
+All returned HTTP 200 with no runtime JS errors in test runs.
+
+### 5) Lighthouse accessibility result
+
+Ran Lighthouse accessibility audit on local preview build:
+- **Accessibility score: 100/100**
+
+### 6) Quality gates
+
+- `npm run lint` ✅
+- `npm run build` ✅
+
+### 7) Acceptance criteria status
+
+All requested criteria are now covered:
+- Authentication ✅
+- Navigation using React Router ✅
+- Global state management via Context API ✅
+- At least two external libraries beyond core stack ✅
+- React hooks beyond basic usage (`useMemo`, `useCallback`, `lazy`, `Suspense`) ✅
+- Chrome/Firefox/Safari support ✅
+- Fully responsive between 320px and 1600px ✅
+- Accessibility standards with Lighthouse 100 ✅
+- Clean code baseline (lint/build + improved semantics and structure) ✅
