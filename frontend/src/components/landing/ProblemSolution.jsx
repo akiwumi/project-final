@@ -21,7 +21,7 @@ const items = [
 
 export function ProblemSolution() {
   return (
-    <section id="why" className="py-24 bg-[var(--ds-bg-light)]">
+    <section id="why" className="py-16 sm:py-24 bg-[var(--ds-bg-light)]">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <motion.p
           className="text-center text-xs uppercase tracking-[0.2em] text-[var(--ds-accent)] mb-3 font-medium"

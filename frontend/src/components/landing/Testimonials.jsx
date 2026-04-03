@@ -48,7 +48,7 @@ export function Testimonials() {
       : testimonials.filter((t) => t.role === activeTab);
 
   return (
-    <section id="testimonials" className="py-24 bg-[var(--ds-surface)]">
+    <section id="testimonials" className="py-16 sm:py-24 bg-[var(--ds-surface)]">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <motion.p
           className="text-center text-xs uppercase tracking-[0.2em] text-[var(--ds-accent)] mb-3 font-medium"

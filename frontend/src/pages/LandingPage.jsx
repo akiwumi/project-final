@@ -16,10 +16,6 @@ export function LandingPage() {
         <ProblemSolution />
         <StatsSection />
         <Testimonials />
-        <section id="advice" className="py-12 bg-[var(--ds-bg-light)]" />
-        <section id="rules" className="py-12 bg-[var(--ds-surface)]" />
-        <section id="terms" className="py-12 bg-[var(--ds-bg-light)]" />
-        <section id="about" className="py-12 bg-[var(--ds-surface)]" />
       </main>
       <Footer />
     </div>
