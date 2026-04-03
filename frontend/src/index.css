@@ -6,3 +6,19 @@ body {
   margin: 0;
   font-family: var(--ds-font-sans);
 }
+
+@media (max-width: 640px) and (orientation: portrait) {
+  .hero-video-media {
+    object-fit: contain;
+    object-position: center center;
+  }
+
+  .hero-video-overlay {
+    background: linear-gradient(
+      to top,
+      rgba(0, 0, 0, 0.74),
+      rgba(0, 0, 0, 0.34),
+      rgba(0, 0, 0, 0.16)
+    );
+  }
+}

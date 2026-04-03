@@ -4,11 +4,11 @@ import { Link } from "react-router-dom";
 
 export function HeroVideo() {
   return (
-    <section className="relative h-[100svh] min-h-[100svh] sm:h-screen sm:min-h-[600px] flex flex-col justify-between overflow-hidden">
+    <section className="relative h-[100dvh] min-h-[100dvh] sm:h-screen sm:min-h-[600px] flex flex-col justify-between overflow-hidden">
       {/* Hero background video */}
       <div className="absolute inset-0 bg-[var(--ds-bg-dark)]">
         <video
-          className="absolute inset-0 w-full h-full object-cover object-center"
+          className="hero-video-media absolute inset-0 w-full h-full object-cover object-center"
           autoPlay
           muted
           loop
@@ -18,12 +18,12 @@ export function HeroVideo() {
           <source src="/video/herovideo.mp4" type="video/mp4" />
         </video>
         <div
-          className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/20 to-transparent pointer-events-none"
+          className="hero-video-overlay absolute inset-0 bg-gradient-to-t from-black/70 via-black/20 to-transparent pointer-events-none"
           aria-hidden
         />
       </div>
 
-      <div className="relative z-10 flex-1 flex flex-col items-center justify-center px-4 pt-20 sm:pt-24 pb-6">
+      <div className="relative z-10 flex-1 flex flex-col items-center justify-center px-4 pt-14 sm:pt-24 pb-3 sm:pb-6">
         <motion.div
           className="text-center max-w-3xl"
           initial={{ opacity: 0, y: 24 }}
@@ -61,7 +61,7 @@ export function HeroVideo() {
       </div>
 
       <motion.div
-        className="relative z-10 px-4 pb-10 sm:pb-14 flex justify-center"
+        className="relative z-10 px-4 pb-6 sm:pb-14 flex justify-center"
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ delay: 0.5, duration: 0.6 }}
