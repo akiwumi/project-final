@@ -67,6 +67,24 @@ const TermsPage = lazy(() =>
 const PrivacyPage = lazy(() =>
   import("./pages/Privacy").then((module) => ({ default: module.PrivacyPage }))
 );
+const ComparePage = lazy(() =>
+  import("./pages/Compare").then((module) => ({ default: module.ComparePage }))
+);
+const QRCodeMonkeyAlternativePage = lazy(() =>
+  import("./pages/ComparisonAlternatives").then((module) => ({
+    default: module.QRCodeMonkeyAlternativePage,
+  }))
+);
+const QRTigerAlternativePage = lazy(() =>
+  import("./pages/ComparisonAlternatives").then((module) => ({
+    default: module.QRTigerAlternativePage,
+  }))
+);
+const MEQRAlternativePage = lazy(() =>
+  import("./pages/ComparisonAlternatives").then((module) => ({
+    default: module.MEQRAlternativePage,
+  }))
+);
 const AdminLogin = lazy(() =>
   import("./pages/admin/Login").then((module) => ({ default: module.AdminLogin }))
 );
@@ -103,6 +121,13 @@ export function App() {
           <Route path="/advice" element={<AdvicePage />} />
           <Route path="/terms" element={<TermsPage />} />
           <Route path="/privacy" element={<PrivacyPage />} />
+          <Route path="/compare" element={<ComparePage />} />
+          <Route
+            path="/compare/qr-code-monkey-alternative"
+            element={<QRCodeMonkeyAlternativePage />}
+          />
+          <Route path="/compare/qr-tiger-alternative" element={<QRTigerAlternativePage />} />
+          <Route path="/compare/me-qr-alternative" element={<MEQRAlternativePage />} />
 
           {/* Entrepreneur registration flow */}
           <Route path="/register" element={<EntrepreneurRegister />} />

@@ -9,6 +9,10 @@ const footerLinks = {
     { label: "For Providers", to: "/register?role=provider" },
   ],
   resources: [
+    { label: "Compare tools", to: "/compare" },
+    { label: "QRCode Monkey Alt", to: "/compare/qr-code-monkey-alternative" },
+    { label: "QR TIGER Alt", to: "/compare/qr-tiger-alternative" },
+    { label: "ME-QR Alt", to: "/compare/me-qr-alternative" },
     { label: "Advice", to: "/advice" },
     { label: "Rules", to: "/terms" },
     { label: "Terms", to: "/terms" },
